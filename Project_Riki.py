@@ -69,9 +69,9 @@ if st.session_state.halaman == 'menu':
     with col_logo:
         st.image("https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_PLN.png", width=60)
     with col_judul:
-        st.title("Menu Utama")
+        st.title("Dashboard Proteksi ULTG Bekasi")
 
-    st.write("Silakan pilih modul pemeliharaan Gardu Induk:")
+    st.write("Silakan pilih modul Proteksi:")
     st.divider()
 
     kolom1, kolom2 = st.columns(2)
