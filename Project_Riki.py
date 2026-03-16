@@ -86,6 +86,52 @@ if st.session_state.halaman == 'menu':
         st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
 
 # ==========================================
+    # 2. MEMBUAT FILTER PENCARIAN BERTINGKAT (3 Kolom Sejajar)
+    kolom_gi, kolom_bay, kolom_relay = st.columns(3)
+    
+    with kolom_gi:
+        # Mengambil otomatis nama GI dari database
+        daftar_gi = ["Pilih GI..."] + list(database_testplug.keys())
+        pilihan_gi = st.selectbox("Gardu Induk", daftar_gi)
+        
+    with kolom_bay:
+        # Logika: Jika GI dipilih, munculkan daftar Bay milik GI tersebut
+        if pilihan_gi != "Pilih GI...":
+            daftar_bay = ["Pilih Bay..."] + list(database_testplug[pilihan_gi].keys())
+        else:
+            daftar_bay = ["Pilih Bay..."]
+        pilihan_bay = st.selectbox("Bay / Line", daftar_bay)
+        
+    with kolom_relay:
+        # Logika: Jika Bay dipilih, munculkan daftar Relay milik Bay tersebut
+        if pilihan_bay != "Pilih Bay...":
+            daftar_relay = ["Pilih Relay..."] + list(database_testplug[pilihan_gi][pilihan_bay].keys())
+        else:
+            daftar_relay = ["Pilih Relay..."]
+        pilihan_relay = st.selectbox("Jenis Relay", daftar_relay)
+
+    st.divider()
+
+    # 3. MENAMPILKAN HASIL JIKA RELAY SUDAH DIPILIH SAMPAI AKHIR
+    if pilihan_relay != "Pilih Relay...":
+        # Menarik spesifik data relay yang dipilih dari database
+        data_relay = database_testplug[pilihan_gi][pilihan_bay][pilihan_relay]
+        
+        st.success(f"Lokasi: {pilihan_gi} ➔ {pilihan_bay}")
+        
+        # Menampilkan detail Merk, Tipe, dan No Seri
+        st.markdown(f"#### 🏷️ {data_relay['Merk']} {data_relay['Tipe']}")
+        st.write(f"**No Seri / S/N:** `{data_relay['No Seri']}`")
+        
+        st.write("") # Spasi
+        
+        # Menampilkan tabel jika datanya sudah diisi, atau pesan info jika masih kosong
+        if len(data_relay["Konfigurasi"]) > 0:
+            st.write("**Tabel Panduan Injeksi Test Plug:**")
+            df_config = pd.DataFrame(data_relay["Konfigurasi"])
+            st.dataframe(df_config, use_container_width=True)
+        else:
+            st.info("⚠️ Tabel konfigurasi pin Test Plug untuk relay ini belum diinput ke database.")
 # HALAMAN 2: TEST PLUG
 # ==========================================
 elif st.session_state.halaman == 'test_plug':
@@ -190,52 +236,7 @@ elif st.session_state.halaman == 'test_plug':
         }
     },
 
-    # 2. MEMBUAT FILTER PENCARIAN BERTINGKAT (3 Kolom Sejajar)
-    kolom_gi, kolom_bay, kolom_relay = st.columns(3)
-    
-    with kolom_gi:
-        # Mengambil otomatis nama GI dari database
-        daftar_gi = ["Pilih GI..."] + list(database_testplug.keys())
-        pilihan_gi = st.selectbox("Gardu Induk", daftar_gi)
-        
-    with kolom_bay:
-        # Logika: Jika GI dipilih, munculkan daftar Bay milik GI tersebut
-        if pilihan_gi != "Pilih GI...":
-            daftar_bay = ["Pilih Bay..."] + list(database_testplug[pilihan_gi].keys())
-        else:
-            daftar_bay = ["Pilih Bay..."]
-        pilihan_bay = st.selectbox("Bay / Line", daftar_bay)
-        
-    with kolom_relay:
-        # Logika: Jika Bay dipilih, munculkan daftar Relay milik Bay tersebut
-        if pilihan_bay != "Pilih Bay...":
-            daftar_relay = ["Pilih Relay..."] + list(database_testplug[pilihan_gi][pilihan_bay].keys())
-        else:
-            daftar_relay = ["Pilih Relay..."]
-        pilihan_relay = st.selectbox("Jenis Relay", daftar_relay)
 
-    st.divider()
-
-    # 3. MENAMPILKAN HASIL JIKA RELAY SUDAH DIPILIH SAMPAI AKHIR
-    if pilihan_relay != "Pilih Relay...":
-        # Menarik spesifik data relay yang dipilih dari database
-        data_relay = database_testplug[pilihan_gi][pilihan_bay][pilihan_relay]
-        
-        st.success(f"Lokasi: {pilihan_gi} ➔ {pilihan_bay}")
-        
-        # Menampilkan detail Merk, Tipe, dan No Seri
-        st.markdown(f"#### 🏷️ {data_relay['Merk']} {data_relay['Tipe']}")
-        st.write(f"**No Seri / S/N:** `{data_relay['No Seri']}`")
-        
-        st.write("") # Spasi
-        
-        # Menampilkan tabel jika datanya sudah diisi, atau pesan info jika masih kosong
-        if len(data_relay["Konfigurasi"]) > 0:
-            st.write("**Tabel Panduan Injeksi Test Plug:**")
-            df_config = pd.DataFrame(data_relay["Konfigurasi"])
-            st.dataframe(df_config, use_container_width=True)
-        else:
-            st.info("⚠️ Tabel konfigurasi pin Test Plug untuk relay ini belum diinput ke database.")
 
 # (Pastikan kode # HALAMAN 3: WIRING DIAGRAM tetap ada di bawah ini)
 
