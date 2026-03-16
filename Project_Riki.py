@@ -378,253 +378,126 @@ elif st.session_state.halaman == 'wiring':
 # HALAMAN 4: GENERATOR BERITA ACARA (BA)
 # ==========================================
 elif st.session_state.halaman == 'catatan':
-    from fpdf import FPDF
+    from docxtpl import DocxTemplate, InlineImage
+    from docx.shared import Mm
     import tempfile
     import os
-    from datetime import datetime
     
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
-    st.subheader("📝 Generator BA (Presisi Microsoft Word)")
+    st.subheader("📝 Generator BA (Sistem Template Word)")
+    st.info("Sistem ini menggunakan file template_ba.docx. Hasil dijamin 100% identik dengan format resmi.")
 
-    # --- KELAS KHUSUS: KOP SURAT PRESISI MILIMETER ---
-    class PDF_BA(FPDF):
-        def header(self):
-            start_x = 10.8
-            y_start = 20 
-            
-            # 1. BORDERS TABEL
-            self.rect(start_x, y_start, 28.4, 16) 
-            self.rect(start_x + 28.4, y_start, 35, 8) 
-            self.rect(start_x + 63.4, y_start, 65, 8) 
-            self.rect(start_x + 128.4, y_start, 25, 8) 
-            self.rect(start_x + 153.4, y_start, 35, 8) 
-            
-            self.rect(start_x + 28.4, y_start + 8, 35, 8) 
-            self.rect(start_x + 63.4, y_start + 8, 65, 8) 
-            self.rect(start_x + 128.4, y_start + 8, 25, 8) 
-            self.rect(start_x + 153.4, y_start + 8, 35, 8) 
-            
-            self.rect(start_x, y_start + 16, 188.4, 12) 
-            
-            # 2. TEKS KOP SURAT (Di-adjust vertikalnya agar lebih ke tengah kotak)
-            self.set_font('Arial', 'B', 14)
-            self.set_xy(start_x, y_start + 3)
-            self.cell(28.4, 5, 'LEVEL', align='C')
-            self.set_font('Arial', 'B', 18)
-            self.set_xy(start_x, y_start + 9)
-            self.cell(28.4, 5, '5', align='C')
-            
-            self.set_font('Arial', '', 9)
-            self.set_xy(start_x + 29.4, y_start + 1.5)
-            self.multi_cell(33, 3.5, 'No. Informasi\nTerdokumentasi')
-            self.set_xy(start_x + 64.4, y_start + 2.5)
-            self.cell(63, 4, '0003.DOK/BA/HAR/UITJBT/2024')
-            self.set_xy(start_x + 129.4, y_start + 1.5)
-            self.multi_cell(23, 3.5, 'Berlaku\nEfektif')
-            self.set_xy(start_x + 154.4, y_start + 2.5)
-            self.cell(33, 4, '05 Maret 2024')
-            
-            self.set_xy(start_x + 29.4, y_start + 10.5)
-            self.cell(33, 4, 'Status')
-            self.set_xy(start_x + 64.4, y_start + 10.5)
-            self.cell(63, 4, 'Edisi : 01 / Revisi : 00')
-            self.set_xy(start_x + 129.4, y_start + 10.5)
-            self.cell(23, 4, 'Halaman')
-            self.set_xy(start_x + 154.4, y_start + 10.5)
-            self.cell(33, 4, f'{self.page_no()} dari {{nb}}')
-            
-            self.set_font('Arial', 'B', 11)
-            self.set_xy(start_x, y_start + 17.5)
-            self.cell(188.4, 4.5, 'BERITA ACARA PEMELIHARAAN ALAT UJI / ALAT KERJA', align='C')
-            self.set_font('Arial', 'B', 10)
-            self.set_xy(start_x, y_start + 22)
-            self.cell(188.4, 4.5, 'PT PLN (PERSERO) UNIT INDUK TRANSMISI JAWA BAGIAN TENGAH', align='C')
-            
-            self.set_y(y_start + 35)
-
-    # 1. FORM INPUT DATA
+    # 1. FORM INPUT DATA (Sama seperti sebelumnya)
     with st.expander("1. Identitas Pekerjaan", expanded=True):
-        no_ba = st.text_input("Nomor BA", value="001 /BAPS/NWTBN/ULTG-BKSI/III/2026")
-        judul_ba = st.text_area("Judul Pekerjaan (Kapital)", value="RESETTING TEGANGAN REFERENSI DAN BANDWITH AVR TRAFO #1 GIS 150KV NEW TAMBUN")
-        latar_belakang = st.text_area("Latar Belakang", value="Sebagai tindak lanjut dari surat UP3 terkait permintaan resetting ulang tegangan referensi pada Bay Trafo #1 GIS 150kV New Tambun")
+        in_no_ba = st.text_input("Nomor BA", value="001 /BAPS/NWTBN/ULTG-BKSI/III/2026")
+        in_judul = st.text_area("Judul Pekerjaan (Kapital)", value="RESETTING TEGANGAN REFERENSI DAN BANDWITH AVR TRAFO #1")
+        in_latar = st.text_area("Latar Belakang", value="Sebagai tindak lanjut dari surat UP3...")
         
     with st.expander("2. Waktu & Lokasi"):
         c1, c2, c3 = st.columns(3)
         with c1:
-            hari_ba = st.selectbox("Hari", ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"], index=4)
+            in_hari = st.selectbox("Hari", ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"], index=4)
         with c2:
-            tanggal_ba = st.date_input("Tanggal Pelaksanaan")
+            in_tgl = st.date_input("Tanggal")
         with c3:
-            jam_ba = st.time_input("Pukul (WIB)")
+            in_jam = st.time_input("Pukul (WIB)")
             
-        peralatan = st.text_input("Peralatan Terpasang", value="AVR Trafo #1 GIS 150kV New Tambun")
+        in_alat = st.text_input("Peralatan Terpasang", value="AVR Trafo #1 GIS 150kV New Tambun")
 
     with st.expander("3. Hasil Pekerjaan"):
-        kegiatan = st.text_area("Langkah Kegiatan", height=120, value="1. Melakukan pengecekan setting yang terpasang\n2. Melakukan Resetting Parameter AVR\n3. Melakukan Pengecekan bersama setting yang terpasang setelah resetting\n4. Melakukan pengujian individu pasca resetting (jika offline)\n5. Melakukan pengujian fungsi unjuk kerja AVR pasca resetting\n6. Dokumentasi")
-        col_a, col_b = st.columns(2)
-        with col_a:
-            anomali = st.text_area("Anomali", value="Nihil")
-        with col_b:
-            perbaikan = st.text_area("Langkah Perbaikan", value="Nihil")
-        tertunda = st.text_input("Pekerjaan Tertunda", value="Nihil")
-        kesimpulan = st.text_area("Kesimpulan", value="Telah dilakukan pekerjaan Resetting Tegangan Referensi dan Bandwith Trafo #1 GIS 150kV New Tambun sesuai dengan rekomendasi dengan hasil uji baik.")
+        in_kegiatan = st.text_area("Langkah Kegiatan", value="1. Pengecekan setting\n2. Resetting Parameter")
+        in_anomali = st.text_area("Anomali", value="Nihil")
+        in_perbaikan = st.text_area("Langkah Perbaikan", value="Nihil")
+        in_tertunda = text_input("Pekerjaan Tertunda", value="Nihil")
+        in_kesimpulan = st.text_area("Kesimpulan", value="Selesai dan aman.")
 
     with st.expander("4. Tim Pelaksana & Pengesahan"):
-        pelaksana = st.multiselect("Daftar Pelaksana", ["Edward D", "Rizky Wira H", "Riki H", "Teknisi Lainnya"], default=["Edward D", "Rizky Wira H", "Riki H"])
+        in_p1 = st.text_input("Pelaksana 1", value="Edward D")
+        in_p2 = st.text_input("Pelaksana 2", value="Rizky Wira H")
+        in_p3 = st.text_input("Pelaksana 3", value="Riki H")
+        
         k1, k2, k3 = st.columns(3)
         with k1:
-            tl_jar = st.text_input("TL Jar", value="M JAENAL M")
+            in_tl_jar = st.text_input("TL Jar", value="M JAENAL M")
         with k2:
-            up2d = st.text_input("UP2D", value="ORRY VERNANDA")
+            in_up2d = st.text_input("UP2D", value="ORRY VERNANDA")
         with k3:
-            tl_harpromet = st.text_input("TL Harpromet", value="ERVAN JAGI M W")
+            in_tl_har = st.text_input("TL Harpromet", value="ERVAN JAGI M W")
 
     st.write("### 📸 Lampiran Dokumentasi")
-    foto_lapangan = st.file_uploader("Upload Foto Sebelum & Sesudah (Opsional)", type=["jpg", "jpeg", "png"])
+    in_foto = st.file_uploader("Upload Foto Lapangan", type=["jpg", "jpeg", "png"])
 
     st.divider()
 
-    # 2. LOGIKA GENERATOR FPDF
-    if st.button("📄 Buat Dokumen BA (PDF)", type="primary", use_container_width=True):
-        with st.spinner("Merakit format presisi Microsoft Word... ⏳"):
-            pdf = PDF_BA(orientation='P', unit='mm', format='A4')
-            pdf.set_margins(left=25, top=20, right=12.5)
-            pdf.set_auto_page_break(auto=True, margin=15)
-            pdf.alias_nb_pages()
-            
-            w_aktif = 172.5 
-            
-            # --- KAMUS TRANSLATE BULAN INDONESIA ---
-            bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
-            tgl_indo = f"{tanggal_ba.day} {bulan_indo[tanggal_ba.month - 1]} {tanggal_ba.year}"
-            
-            # ================= HALAMAN 1 =================
-            pdf.add_page()
-            
-            pdf.set_font("Times", 'B', 12)
-            pdf.cell(w_aktif, 6, txt="BERITA ACARA PEKERJAAN", ln=True, align='C')
-            pdf.set_font("Times", 'B', 11)
-            pdf.cell(w_aktif, 6, txt=f"No. : {no_ba}", ln=True, align='C')
-            pdf.ln(3)
-            
-            pdf.set_font("Times", 'B', 16)
-            pdf.multi_cell(w_aktif, 6, txt=judul_ba, align='C')
-            pdf.ln(5)
-            
-            # --- PARAGRAF DENGAN FITUR MARKDOWN BOLD (fpdf2) ---
-            pdf.set_left_margin(34.4) 
-            pdf.set_right_margin(17.5) 
-            pdf.set_font("Times", '', 11)
-            
-            # Perhatikan penggunaan bintang ganda (**) untuk mencetak tebal
-            teks_pembuka = (f"    {latar_belakang}, maka pada hari **{hari_ba}** pukul **{jam_ba.strftime('%H.%M')} WIB**, "
-                            f"tanggal **{tgl_indo}**, **PT PLN (Persero) UIT JBT, UPT BEKASI, ULTG BEKASI, "
-                            f"Sub-bidang Pemeliharaan Proteksi, Meter dan Otomasi** telah melaksanakan **{judul_ba}**, "
-                            f"sesuai dengan rekomendasi serta prosedur dan dinyatakan :")
-            
-            # markdown=True mengaktifkan fitur bold
-            pdf.multi_cell(0, 7, txt=teks_pembuka, align='J', markdown=True) 
-            pdf.ln(4)
-            
-            pdf.set_left_margin(25)
-            pdf.set_right_margin(12.5)
-            
-            pdf.set_font("Times", 'B', 12)
-            pdf.cell(w_aktif, 6, txt='"TELAH SELESAI DILAKSANAKAN"', ln=True, align='C')
-            pdf.ln(4)
-            
-            pdf.set_font("Times", '', 11)
-            pdf.cell(w_aktif, 6, txt="Demikian Berita Acara ini dibuat dan ditanda tangani dengan sebenar-benarnya.", ln=True)
-            pdf.ln(10)
-            
-            # --- TANDA TANGAN PELAKSANA DI KANAN ---
-            pdf.set_font("Times", '', 12)
-            posisi_kanan = 120 # Koordinat X untuk menggeser ke kanan
-            
-            pdf.set_x(posisi_kanan)
-            pdf.cell(50, 6, txt=f"Bekasi, {tgl_indo}", ln=True)
-            pdf.set_x(posisi_kanan)
-            pdf.cell(50, 6, txt="Pelaksana :", ln=True)
-            for i, orang in enumerate(pelaksana):
-                pdf.set_x(posisi_kanan)
-                pdf.cell(50, 6, txt=f"{i+1}. {orang}", ln=True)
-            
-            pdf.ln(15) 
-            
-            # --- MATRIX PENGESAH DI BAWAH ---
-            y_awal_ttd = pdf.get_y()
-            lebar_kolom = w_aktif / 3
-            
-            pdf.set_font("Times", '', 12)
-            pdf.set_xy(25, y_awal_ttd)
-            pdf.cell(lebar_kolom, 5, txt="TL Jar", align='C')
-            pdf.set_xy(25 + lebar_kolom, y_awal_ttd)
-            pdf.cell(lebar_kolom, 5, txt="UP2D", align='C')
-            pdf.set_xy(25 + (lebar_kolom*2), y_awal_ttd)
-            pdf.cell(lebar_kolom, 5, txt="TL Harpromet & Otomasi", align='C')
-            
-            pdf.ln(25)
-            
-            y_nama = pdf.get_y()
-            pdf.set_font("Times", 'B', 12)
-            pdf.set_xy(25, y_nama)
-            pdf.cell(lebar_kolom, 5, txt=f"( {tl_jar} )", align='C')
-            pdf.set_xy(25 + lebar_kolom, y_nama)
-            pdf.cell(lebar_kolom, 5, txt=f"( {up2d} )", align='C')
-            pdf.set_xy(25 + (lebar_kolom*2), y_nama)
-            pdf.cell(lebar_kolom, 5, txt=f"( {tl_harpromet} )", align='C')
-
-            # ================= HALAMAN 2 =================
-            pdf.add_page()
-            
-            def tulis_poin(huruf, judul, isi):
-                pdf.set_font("Times", 'B', 12)
-                pdf.cell(w_aktif, 7, txt=f"{huruf}. {judul}", ln=True)
-                pdf.set_font("Times", '', 12)
-                pdf.set_x(30) 
-                pdf.multi_cell(w_aktif - 5, 7, txt=isi)
-                pdf.ln(3)
-
-            tulis_poin("A", "PERALATAN TERPASANG", peralatan)
-            tulis_poin("B", "LANGKAH KEGIATAN", kegiatan)
-            tulis_poin("C", "ANOMALI", anomali)
-            tulis_poin("D", "LANGKAH PERBAIKAN :", perbaikan)
-            tulis_poin("E", "PEKERJAAN TERTUNDA :", tertunda)
-            tulis_poin("F", "KESIMPULAN", kesimpulan)
-
-            # ================= HALAMAN 3 =================
-            if foto_lapangan is not None:
-                pdf.add_page()
-                pdf.set_font("Times", 'B', 12)
-                pdf.cell(w_aktif, 8, txt="LAMPIRAN DOKUMENTASI", ln=True, align='C')
-                pdf.ln(5)
+    # 2. LOGIKA PENYUNTIKAN TEMPLATE
+    if st.button("📄 Buat Dokumen BA", type="primary", use_container_width=True):
+        with st.spinner("Menyuntikkan data ke dalam Template Word... ⏳"):
+            try:
+                # Membuka file cetakan dari GitHub
+                doc = DocxTemplate("template_ba.docx")
                 
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_foto:
-                    tmp_foto.write(foto_lapangan.getvalue())
-                    tmp_foto_path = tmp_foto.name
+                # Format Tanggal Indonesia
+                bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+                tgl_format = f"{in_tgl.day} {bulan_indo[in_tgl.month - 1]} {in_tgl.year}"
                 
-                # Agar gambar selalu center di kertas A4 (Lebar 210mm)
-                # Jika lebar gambar 130mm, maka posisi X = (210 - 130) / 2 = 40mm
-                pdf.image(tmp_foto_path, x=40, w=130)
-                os.remove(tmp_foto_path)
+                # Memasukkan data dari Streamlit ke variabel Template
+                context = {
+                    'no_ba': in_no_ba,
+                    'judul_ba': in_judul,
+                    'latar_belakang': in_latar,
+                    'hari': in_hari,
+                    'tgl': tgl_format,
+                    'jam': in_jam.strftime('%H.%M'),
+                    'alat': in_alat,
+                    'kegiatan': in_kegiatan,
+                    'anomali': in_anomali,
+                    'perbaikan': in_perbaikan,
+                    'tertunda': in_tertunda,
+                    'kesimpulan': in_kesimpulan,
+                    'pelaksana_1': in_p1,
+                    'pelaksana_2': in_p2,
+                    'pelaksana_3': in_p3,
+                    'tl_jar': in_tl_jar,
+                    'up2d': in_up2d,
+                    'tl_har': in_tl_har,
+                    'foto_lampiran': '' # Kosongkan dulu
+                }
+                
+                # Jika ada foto, sisipkan ke dalam Word dengan lebar presisi 130mm
+                if in_foto:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_foto:
+                        tmp_foto.write(in_foto.getvalue())
+                        tmp_path = tmp_foto.name
+                    # Sisipkan gambar ke variabel foto_lampiran
+                    context['foto_lampiran'] = InlineImage(doc, tmp_path, width=Mm(130))
 
-            # --- EXPORT ---
-            file_output = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-            pdf.output(file_output.name)
-            
-            with open(file_output.name, "rb") as f:
-                pdf_bytes = f.read()
-            os.remove(file_output.name)
+                # Render (Suntikkan data ke Word)
+                doc.render(context)
+                
+                # Simpan Hasilnya Sementara
+                file_output = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
+                doc.save(file_output.name)
+                
+                # Siapkan untuk Didownload
+                with open(file_output.name, "rb") as f:
+                    docx_bytes = f.read()
+                
+                # Bersihkan file sementara
+                os.remove(file_output.name)
+                if in_foto:
+                    os.remove(tmp_path)
 
-        st.success("✅ Dokumen BA presisi tinggi berhasil dirakit!")
-        st.download_button(
-            label="⬇️ Download BA Format Asli (PDF)",
-            data=pdf_bytes,
-            file_name=f"BA_{peralatan.replace(' ', '_')}.pdf",
-            mime='application/pdf',
-            type="primary"
-        )
+                st.success("✅ Dokumen BA berhasil dirakit dengan sempurna!")
+                st.download_button(
+                    label="⬇️ Download BA (Word .docx)",
+                    data=docx_bytes,
+                    file_name=f"BA_{in_alat.replace(' ', '_')}.docx",
+                    mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    type="primary"
+                )
+            except Exception as e:
+                st.error(f"Terjadi kesalahan. Pastikan file 'template_ba.docx' sudah di-upload ke GitHub. Detail Error: {e}")
 # ==========================================
 # HALAMAN 5: SETTINGS
 # ==========================================
