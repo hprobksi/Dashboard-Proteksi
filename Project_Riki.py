@@ -5,6 +5,9 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 import streamlit as st
 import pandas as pd
+from fpdf import FPDF
+import tempfile
+import os
 
 # 1. SETUP HALAMAN
 st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
@@ -371,15 +374,178 @@ elif st.session_state.halaman == 'wiring':
                         if sukses:
                             st.success(f"✅ Dokumen revisi '{file_upload.name}' resmi tersimpan di database!")
 # ==========================================
-# HALAMAN LAINNYA
 # ==========================================
-
+# HALAMAN 4: GENERATOR BERITA ACARA (BA)
+# ==========================================
 elif st.session_state.halaman == 'catatan':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
-    st.subheader("📝 Catatan Pemeliharaan")
-    st.text_area("Tulis temuan lapangan:")
+    st.divider()
+    st.subheader("📝 Generator BA Pemeliharaan")
+    st.info("Form ini telah disesuaikan dengan format standar BA UIT JBT ULTG Bekasi.")
 
+    # 1. FORM INPUT DATA (Berdasarkan Template Dokumen Asli)
+    with st.expander("1. Identitas Pekerjaan", expanded=True):
+        no_ba = st.text_input("Nomor BA", value="001 /BAPS/NWTBN/ULTG-BKSI/III/2026")
+        judul_ba = st.text_input("Judul Pekerjaan (Kapital)", value="RESETTING TEGANGAN REFERENSI DAN BANDWITH AVR TRAFO #1 GIS 150KV NEW TAMBUN")
+        latar_belakang = st.text_area("Latar Belakang / Dasar Pekerjaan", value="Sebagai tindak lanjut dari surat UP3 terkait permintaan resetting ulang tegangan referensi pada Bay Trafo #1 GIS 150kV New Tambun")
+        
+    with st.expander("2. Waktu & Lokasi"):
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            hari_ba = st.selectbox("Hari", ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"], index=4)
+        with c2:
+            tanggal_ba = st.date_input("Tanggal Pelaksanaan")
+        with c3:
+            jam_ba = st.time_input("Pukul (WIB)")
+            
+        peralatan = st.text_input("Peralatan Terpasang", value="AVR Trafo #1 GIS 150kV New Tambun")
+
+    with st.expander("3. Hasil Pekerjaan"):
+        kegiatan = st.text_area("Langkah Kegiatan (Gunakan angka 1, 2, 3...)", height=100, value="1. Melakukan pengecekan setting terpasang\n2. Melakukan Resetting Parameter AVR\n3. Pengujian fungsi unjuk kerja")
+        col_a, col_b = st.columns(2)
+        with col_a:
+            anomali = st.text_area("Anomali", value="Nihil")
+        with col_b:
+            perbaikan = st.text_area("Langkah Perbaikan", value="Nihil")
+        tertunda = st.text_input("Pekerjaan Tertunda", value="Nihil")
+        kesimpulan = st.text_area("Kesimpulan", value="Telah dilakukan pekerjaan sesuai dengan rekomendasi dengan hasil uji baik.")
+
+    with st.expander("4. Tim Pelaksana & Pengesahan"):
+        # Pelaksana lapangan bisa dipilih lebih dari satu
+        pelaksana = st.multiselect("Daftar Pelaksana", ["Riki H", "Edward D", "Rizky Wira H", "Teknisi Lainnya"], default=["Edward D", "Rizky Wira H", "Riki H"])
+        
+        st.write("**Pejabat Pengesah:**")
+        k1, k2, k3 = st.columns(3)
+        with k1:
+            tl_jar = st.text_input("Nama TL Jar", value="M JAENAL M")
+        with k2:
+            up2d = st.text_input("Nama UP2D", value="ORRY VERNANDA")
+        with k3:
+            tl_harpromet = st.text_input("Nama TL Harpromet", value="ERVAN JAGI M W")
+
+    st.divider()
+
+    # 2. LOGIKA GENERATOR FPDF (Template Spesifik UIT JBT)
+    if st.button("📄 Buat Dokumen BA (PDF)", type="primary", use_container_width=True):
+        with st.spinner("Merakit format PDF standar PLN... ⏳"):
+            pdf = FPDF()
+            pdf.add_page()
+            
+            # --- MARGIN KIRI KANAN ---
+            pdf.set_left_margin(20)
+            pdf.set_right_margin(20)
+            
+            # --- HEADER (KOP SURAT) ---
+            pdf.set_font("Arial", 'B', 14)
+            pdf.cell(0, 8, txt="BERITA ACARA PEKERJAAN", ln=True, align='C')
+            pdf.set_font("Arial", '', 11)
+            pdf.cell(0, 6, txt=f"No. : {no_ba}", ln=True, align='C')
+            pdf.ln(5)
+            
+            pdf.set_font("Arial", 'B', 12)
+            # Multi_cell untuk judul yang panjang agar turun ke bawah secara rapi
+            pdf.multi_cell(0, 6, txt=judul_ba, align='C')
+            pdf.ln(8)
+            
+            # --- PARAGRAF PEMBUKA (Dibuat mengalir) ---
+            pdf.set_font("Arial", '', 11)
+            teks_pembuka = (f"{latar_belakang}, maka pada hari {hari_ba} pukul {jam_ba.strftime('%H.%M')} WIB, "
+                            f"tanggal {tanggal_ba.strftime('%d-%m-%Y')}, PT PLN (Persero) UIT JBT, UPT BEKASI, ULTG BEKASI, "
+                            f"Sub-bidang Pemeliharaan Proteksi, Meter dan Otomasi telah melaksanakan pekerjaan {judul_ba}, "
+                            f"sesuai dengan rekomendasi serta prosedur dan dinyatakan :")
+            pdf.multi_cell(0, 6, txt=teks_pembuka, align='J')
+            pdf.ln(4)
+            
+            pdf.set_font("Arial", 'B', 12)
+            pdf.cell(0, 6, txt="TELAH SELESAI DILAKSANAKAN", ln=True, align='C')
+            pdf.ln(4)
+            
+            pdf.set_font("Arial", '', 11)
+            pdf.cell(0, 6, txt="Demikian Berita Acara ini dibuat dan ditanda tangani dengan sebenar-benarnya.", ln=True)
+            pdf.ln(8)
+            
+            # --- BAGIAN DETAIL TEKNIS ---
+            # Fungsi kecil untuk membuat baris detail
+            def buat_baris_detail(label, isi):
+                pdf.set_font("Arial", 'B', 11)
+                pdf.cell(50, 6, txt=label, ln=0)
+                pdf.set_font("Arial", '', 11)
+                pdf.multi_cell(0, 6, txt=f": {isi}")
+                pdf.ln(2)
+
+            buat_baris_detail("PERALATAN TERPASANG", peralatan)
+            buat_baris_detail("LANGKAH KEGIATAN", f"\n{kegiatan}") # Di-enter agar rapi ke bawah
+            buat_baris_detail("ANOMALI", anomali)
+            buat_baris_detail("LANGKAH PERBAIKAN", perbaikan)
+            buat_baris_detail("PEKERJAAN TERTUNDA", tertunda)
+            buat_baris_detail("KESIMPULAN", kesimpulan)
+            pdf.ln(10)
+            
+            # --- AREA TANDA TANGAN ---
+            # Menyusun daftar pelaksana
+            pdf.set_font("Arial", '', 11)
+            pdf.cell(0, 6, txt=f"Bekasi, {tanggal_ba.strftime('%d-%m-%Y')}", ln=True, align='L')
+            pdf.cell(30, 6, txt="Pelaksana :", ln=0)
+            
+            # Loop daftar pelaksana ke bawah
+            pos_x_pelaksana = pdf.get_x()
+            pos_y_pelaksana = pdf.get_y()
+            for orang in pelaksana:
+                pdf.set_xy(pos_x_pelaksana, pdf.get_y())
+                pdf.cell(50, 6, txt=orang, ln=True)
+            
+            pdf.ln(15) # Spasi sebelum tabel tanda tangan pengesah
+            
+            # Matrix 3 Kolom untuk Pengesah (TL Jar, UP2D, TL Harpromet)
+            y_awal_ttd = pdf.get_y()
+            lebar_kolom = 170 / 3  # Lebar total dibagi 3
+            
+            pdf.set_font("Arial", '', 10)
+            pdf.set_xy(20, y_awal_ttd)
+            pdf.cell(lebar_kolom, 5, txt="TL Jar", align='C')
+            pdf.set_xy(20 + lebar_kolom, y_awal_ttd)
+            pdf.cell(lebar_kolom, 5, txt="UP2D", align='C')
+            pdf.set_xy(20 + (lebar_kolom*2), y_awal_ttd)
+            pdf.cell(lebar_kolom, 5, txt="TL Harpromet & Otomasi", align='C')
+            
+            # >>> DI SINI NANTI TEMPAT MENYISIPKAN GAMBAR TANDA TANGAN <<<
+            # Contoh: pdf.image("ttd_jaenal.png", x=25, y=pdf.get_y()+5, w=30)
+            
+            pdf.ln(25) # Ruang kosong vertikal untuk tanda tangan
+            
+            pdf.set_font("Arial", 'BU', 10) # B = Bold, U = Underline
+            pdf.set_xy(20, pdf.get_y())
+            pdf.cell(lebar_kolom, 5, txt=f"( {tl_jar} )", align='C')
+            pdf.set_xy(20 + lebar_kolom, pdf.get_y())
+            pdf.cell(lebar_kolom, 5, txt=f"( {up2d} )", align='C')
+            pdf.set_xy(20 + (lebar_kolom*2), pdf.get_y())
+            pdf.cell(lebar_kolom, 5, txt=f"( {tl_harpromet} )", align='C')
+
+            # --- EXPORT FILE ---
+            import tempfile
+            import os
+            file_output = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+            pdf.output(file_output.name)
+            
+            with open(file_output.name, "rb") as f:
+                pdf_bytes = f.read()
+            os.remove(file_output.name)
+
+        # Tombol Download Tampil Setelah Selesai
+        st.success("✅ Dokumen Berita Acara berhasil dirakit!")
+        st.download_button(
+            label="⬇️ Download BA Format Resmi (PDF)",
+            data=pdf_bytes,
+            file_name=f"BA_{peralatan.replace(' ', '_')}_{tanggal_ba}.pdf",
+            mime='application/pdf',
+            type="primary"
+        )
+
+# ==========================================
+# HALAMAN 5: SETTINGS
+# ==========================================
 elif st.session_state.halaman == 'setting':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
     st.subheader("⚙️ Settings")
-    st.write("Versi 2.0.2 - Fixed Syntax")
+    st.write("Versi 5.0 - PDF Generator Aktif 📄")
