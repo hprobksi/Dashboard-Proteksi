@@ -269,3 +269,67 @@ elif st.session_state.halaman == 'setting':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.subheader("⚙️ Settings")
     st.write("Versi 2.0.2 - Fixed Syntax")
+# ==========================================
+# HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
+# ==========================================
+elif st.session_state.halaman == 'wiring':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
+    st.subheader("📸 Dokumentasi Wiring Lapangan")
+
+    st.info("Pilih lokasi, lalu gunakan kamera HP untuk memfoto wiring aktual atau upload PDF revisi.")
+
+    # 1. DATABASE LOKASI (Bisa disamakan dengan Test Plug agar konsisten)
+    lokasi_gi = {
+        "GI Gandamekar": {
+            "Bay Rajapaksi 1": ["Relay LCD", "Relay OCR"],
+            "Bay Rajapaksi 2": ["Relay LCD", "Relay OCR"]
+        },
+        "GI Cikarang": {
+            "Bay Kopel": ["Relay OCR"],
+            "Bay Fajar 1": ["Relay Distance", "Relay OCR"]
+        }
+    }
+
+    # 2. FILTER PENCARIAN BERTINGKAT (Sama seperti Test Plug)
+    # Tambahkan 'key' agar Streamlit tidak bingung membedakan dropdown ini dengan halaman lain
+    k_gi, k_bay, k_relay = st.columns(3)
+    with k_gi:
+        gi_w = st.selectbox("Gardu Induk", ["Pilih..."] + list(lokasi_gi.keys()), key="w_gi")
+    with k_bay:
+        if gi_w != "Pilih...":
+            bay_w = st.selectbox("Bay / Line", ["Pilih..."] + list(lokasi_gi[gi_w].keys()), key="w_bay")
+        else:
+            bay_w = st.selectbox("Bay / Line", ["Pilih..."], key="w_bay")
+    with k_relay:
+        if bay_w != "Pilih...":
+            relay_w = st.selectbox("Jenis Relay", ["Pilih..."] + lokasi_gi[gi_w][bay_w], key="w_relay")
+        else:
+            relay_w = st.selectbox("Jenis Relay", ["Pilih..."], key="w_relay")
+
+    st.divider()
+
+    # 3. FITUR KAMERA DAN UPLOAD FILE
+    if relay_w != "Pilih...":
+        st.write(f"**📍 Target Dokumentasi:** {gi_w} ➔ {bay_w} ➔ {relay_w}")
+        
+        # Membuat 2 Tab: Satu untuk Kamera, Satu untuk Upload File
+        tab1, tab2 = st.tabs(["📸 Ambil Foto (Kamera)", "📂 Upload File (PDF/Gambar)"])
+        
+        with tab1:
+            st.write("Jepret perubahan wiring atau as-built drawing langsung dari depan panel.")
+            # Ini perintah sakti untuk memanggil kamera depan/belakang HP
+            foto = st.camera_input("Ambil Foto Aktual")
+            
+            if foto:
+                st.success("✅ Foto berhasil ditangkap layar!")
+                st.warning("Fitur penyimpanan permanen ke server sedang dikembangkan.")
+                
+        with tab2:
+            st.write("Pilih file PDF atau gambar (JPG/PNG) dari memori HP Anda.")
+            # Ini perintah untuk memunculkan tombol "Browse Files"
+            file_upload = st.file_uploader("Pilih Dokumen", type=["pdf", "jpg", "jpeg", "png"])
+            
+            if file_upload:
+                st.success(f"✅ File '{file_upload.name}' berhasil dimuat!")
+                st.warning("Fitur penyimpanan permanen ke server sedang dikembangkan.")
