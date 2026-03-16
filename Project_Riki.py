@@ -1,3 +1,8 @@
+import json
+import io
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 import streamlit as st
 import pandas as pd
 
@@ -251,7 +256,26 @@ elif st.session_state.halaman == 'test_plug':
             st.table(pd.DataFrame(data["Konfigurasi"]))
         else:
             st.info("⚠️ Tabel belum diinput.")
-
+# ==========================================
+# FUNGSI AJAIB: UPLOAD KE GOOGLE DRIVE
+# ==========================================
+def upload_ke_gdrive(nama_file, byte_data, mime_type):
+    try:
+        rahasia = json.loads(st.secrets["google_credentials"])
+        scopes = ['https://www.googleapis.com/auth/drive.file']
+        creds = service_account.Credentials.from_service_account_info(rahasia, scopes=scopes)
+        layanan = build('drive', 'v3', credentials=creds)
+        
+        # 👇👇👇 MASUKKAN ID FOLDER GOOGLE DRIVE ANDA DI BAWAH INI 👇👇👇
+        ID_FOLDER = "GANTI_DENGAN_ID_FOLDER_ANDA" 
+        
+        metadata_file = {'name': nama_file, 'parents': [ID_FOLDER]}
+        media = MediaIoBaseUpload(io.BytesIO(byte_data), mimetype=mime_type, resumable=True)
+        layanan.files().create(body=metadata_file, media_body=media, fields='id').execute()
+        return True
+    except Exception as e:
+        st.error(f"Gagal terhubung ke server: {e}")
+        return False
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
 # ==========================================
@@ -301,21 +325,25 @@ elif st.session_state.halaman == 'wiring':
         
         with tab1:
             st.write("Jepret perubahan wiring atau as-built drawing langsung dari depan panel.")
-            # Ini perintah sakti untuk memanggil kamera depan/belakang HP
             foto = st.camera_input("Ambil Foto Aktual")
             
             if foto:
-                st.success("✅ Foto berhasil ditangkap layar!")
-                st.warning("Fitur penyimpanan permanen ke server sedang dikembangkan.")
+                with st.spinner('Mengirim ke Google Drive... ⏳'):
+                    # Nama file otomatis pakai nama GI, Bay, dan Relay
+                    nama_foto = f"WIRING_{gi_w}_{bay_w}_{relay_w}.jpg".replace(" ", "_")
+                    sukses = upload_ke_gdrive(nama_foto, foto.getvalue(), "image/jpeg")
+                    if sukses:
+                        st.success(f"✅ Foto '{nama_foto}' berhasil disimpan permanen ke database!")
                 
         with tab2:
             st.write("Pilih file PDF atau gambar (JPG/PNG) dari memori HP Anda.")
-            # Ini perintah untuk memunculkan tombol "Browse Files"
             file_upload = st.file_uploader("Pilih Dokumen", type=["pdf", "jpg", "jpeg", "png"])
             
             if file_upload:
-                st.success(f"✅ File '{file_upload.name}' berhasil dimuat!")
-                st.warning("Fitur penyimpanan permanen ke server sedang dikembangkan.")
+                with st.spinner('Mengunggah dokumen... ⏳'):
+                    sukses = upload_ke_gdrive(file_upload.name, file_upload.getvalue(), file_upload.type)
+                    if sukses:
+                        st.success(f"✅ Dokumen '{file_upload.name}' resmi tersimpan di database!")
 
 # ==========================================
 # HALAMAN LAINNYA
