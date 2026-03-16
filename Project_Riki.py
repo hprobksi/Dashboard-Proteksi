@@ -390,28 +390,24 @@ elif st.session_state.halaman == 'catatan':
     # --- KELAS KHUSUS: KOP SURAT PRESISI MILIMETER ---
     class PDF_BA(FPDF):
         def header(self):
-            # Posisi X Tabel = Margin Kiri (25) - Indent Kiri (-14.2) = 10.8 mm
             start_x = 10.8
-            y_start = 20 # Sesuai Margin Top 2 cm
+            y_start = 20 
             
-            # 1. MENGGAMBAR KOTAK (BORDERS) PREISISI
-            # Baris 1 & 2
-            self.rect(start_x, y_start, 28.4, 16) # Kotak LEVEL 5
-            self.rect(start_x + 28.4, y_start, 35, 8) # Kotak No Info
-            self.rect(start_x + 63.4, y_start, 65, 8) # Kotak 0003...
-            self.rect(start_x + 128.4, y_start, 25, 8) # Kotak Berlaku
-            self.rect(start_x + 153.4, y_start, 35, 8) # Kotak Tgl Berlaku
+            # 1. BORDERS TABEL
+            self.rect(start_x, y_start, 28.4, 16) 
+            self.rect(start_x + 28.4, y_start, 35, 8) 
+            self.rect(start_x + 63.4, y_start, 65, 8) 
+            self.rect(start_x + 128.4, y_start, 25, 8) 
+            self.rect(start_x + 153.4, y_start, 35, 8) 
             
-            self.rect(start_x + 28.4, y_start + 8, 35, 8) # Kotak Status
-            self.rect(start_x + 63.4, y_start + 8, 65, 8) # Kotak Edisi
-            self.rect(start_x + 128.4, y_start + 8, 25, 8) # Kotak Halaman
-            self.rect(start_x + 153.4, y_start + 8, 35, 8) # Kotak 1 dari 1
+            self.rect(start_x + 28.4, y_start + 8, 35, 8) 
+            self.rect(start_x + 63.4, y_start + 8, 65, 8) 
+            self.rect(start_x + 128.4, y_start + 8, 25, 8) 
+            self.rect(start_x + 153.4, y_start + 8, 35, 8) 
             
-            # Baris 3 (Judul PT PLN - Di-merge)
             self.rect(start_x, y_start + 16, 188.4, 12) 
             
-            # 2. MEMASUKKAN TEKS KE DALAM KOTAK (Font Arial untuk Kop)
-            # Kolom LEVEL 5
+            # 2. TEKS KOP SURAT (Di-adjust vertikalnya agar lebih ke tengah kotak)
             self.set_font('Arial', 'B', 14)
             self.set_xy(start_x, y_start + 3)
             self.cell(28.4, 5, 'LEVEL', align='C')
@@ -419,28 +415,25 @@ elif st.session_state.halaman == 'catatan':
             self.set_xy(start_x, y_start + 9)
             self.cell(28.4, 5, '5', align='C')
             
-            # Kolom Baris 1
             self.set_font('Arial', '', 9)
             self.set_xy(start_x + 29.4, y_start + 1.5)
             self.multi_cell(33, 3.5, 'No. Informasi\nTerdokumentasi')
-            self.set_xy(start_x + 64.4, y_start + 2)
+            self.set_xy(start_x + 64.4, y_start + 2.5)
             self.cell(63, 4, '0003.DOK/BA/HAR/UITJBT/2024')
             self.set_xy(start_x + 129.4, y_start + 1.5)
             self.multi_cell(23, 3.5, 'Berlaku\nEfektif')
-            self.set_xy(start_x + 154.4, y_start + 2)
+            self.set_xy(start_x + 154.4, y_start + 2.5)
             self.cell(33, 4, '05 Maret 2024')
             
-            # Kolom Baris 2
-            self.set_xy(start_x + 29.4, y_start + 10)
+            self.set_xy(start_x + 29.4, y_start + 10.5)
             self.cell(33, 4, 'Status')
-            self.set_xy(start_x + 64.4, y_start + 10)
+            self.set_xy(start_x + 64.4, y_start + 10.5)
             self.cell(63, 4, 'Edisi : 01 / Revisi : 00')
-            self.set_xy(start_x + 129.4, y_start + 10)
+            self.set_xy(start_x + 129.4, y_start + 10.5)
             self.cell(23, 4, 'Halaman')
-            self.set_xy(start_x + 154.4, y_start + 10)
+            self.set_xy(start_x + 154.4, y_start + 10.5)
             self.cell(33, 4, f'{self.page_no()} dari {{nb}}')
             
-            # Kolom Baris 3 (Judul)
             self.set_font('Arial', 'B', 11)
             self.set_xy(start_x, y_start + 17.5)
             self.cell(188.4, 4.5, 'BERITA ACARA PEMELIHARAAN ALAT UJI / ALAT KERJA', align='C')
@@ -448,7 +441,6 @@ elif st.session_state.halaman == 'catatan':
             self.set_xy(start_x, y_start + 22)
             self.cell(188.4, 4.5, 'PT PLN (PERSERO) UNIT INDUK TRANSMISI JAWA BAGIAN TENGAH', align='C')
             
-            # Kembalikan posisi Y ke bawah tabel
             self.set_y(y_start + 35)
 
     # 1. FORM INPUT DATA
@@ -469,7 +461,7 @@ elif st.session_state.halaman == 'catatan':
         peralatan = st.text_input("Peralatan Terpasang", value="AVR Trafo #1 GIS 150kV New Tambun")
 
     with st.expander("3. Hasil Pekerjaan"):
-        kegiatan = st.text_area("Langkah Kegiatan (Gunakan angka)", height=100, value="1. Melakukan pengecekan setting yang terpasang\n2. Melakukan Resetting Parameter AVR\n3. Melakukan Pengecekan bersama setting yang terpasang setelah resetting\n4. Melakukan pengujian individu pasca resetting (jika offline)\n5. Melakukan pengujian fungsi unjuk kerja AVR pasca resetting\n6. Dokumentasi")
+        kegiatan = st.text_area("Langkah Kegiatan", height=120, value="1. Melakukan pengecekan setting yang terpasang\n2. Melakukan Resetting Parameter AVR\n3. Melakukan Pengecekan bersama setting yang terpasang setelah resetting\n4. Melakukan pengujian individu pasca resetting (jika offline)\n5. Melakukan pengujian fungsi unjuk kerja AVR pasca resetting\n6. Dokumentasi")
         col_a, col_b = st.columns(2)
         with col_a:
             anomali = st.text_area("Anomali", value="Nihil")
@@ -497,68 +489,70 @@ elif st.session_state.halaman == 'catatan':
     if st.button("📄 Buat Dokumen BA (PDF)", type="primary", use_container_width=True):
         with st.spinner("Merakit format presisi Microsoft Word... ⏳"):
             pdf = PDF_BA(orientation='P', unit='mm', format='A4')
-            
-            # --- SETTING GLOBAL KERTAS (L=2.5cm, T=2cm, R=1.25cm, B=1.5cm) ---
             pdf.set_margins(left=25, top=20, right=12.5)
             pdf.set_auto_page_break(auto=True, margin=15)
             pdf.alias_nb_pages()
             
-            w_aktif = 172.5 # Lebar area ketik normal
+            w_aktif = 172.5 
+            
+            # --- KAMUS TRANSLATE BULAN INDONESIA ---
+            bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+            tgl_indo = f"{tanggal_ba.day} {bulan_indo[tanggal_ba.month - 1]} {tanggal_ba.year}"
             
             # ================= HALAMAN 1 =================
             pdf.add_page()
             
-            # Judul (Times, 12) & No BA (Times, 11)
             pdf.set_font("Times", 'B', 12)
             pdf.cell(w_aktif, 6, txt="BERITA ACARA PEKERJAAN", ln=True, align='C')
             pdf.set_font("Times", 'B', 11)
             pdf.cell(w_aktif, 6, txt=f"No. : {no_ba}", ln=True, align='C')
             pdf.ln(3)
             
-            # Judul Pekerjaan (Times, 16)
             pdf.set_font("Times", 'B', 16)
             pdf.multi_cell(w_aktif, 6, txt=judul_ba, align='C')
             pdf.ln(5)
             
-            # --- PARAGRAF KHUSUS (INDENT & 1.5 SPACING) ---
-            # Mengubah margin khusus untuk paragraf agar indentasinya sesuai Word
-            pdf.set_left_margin(34.4) # Kiri asli (25) + Left Indent (9.4)
-            pdf.set_right_margin(17.5) # Kanan asli (12.5) + Right Indent (5)
-            
+            # --- PARAGRAF DENGAN FITUR MARKDOWN BOLD (fpdf2) ---
+            pdf.set_left_margin(34.4) 
+            pdf.set_right_margin(17.5) 
             pdf.set_font("Times", '', 11)
-            # Menambahkan 4 spasi di awal untuk First Line Indent (0.47 cm)
-            teks_pembuka = (f"    {latar_belakang}, maka pada hari {hari_ba} pukul {jam_ba.strftime('%H.%M')} WIB, "
-                            f"tanggal {tanggal_ba.strftime('%d %B %Y')}, PT PLN (Persero) UIT JBT, UPT BEKASI, ULTG BEKASI, "
-                            f"Sub-bidang Pemeliharaan Proteksi, Meter dan Otomasi telah melaksanakan pekerjaan {judul_ba}, "
+            
+            # Perhatikan penggunaan bintang ganda (**) untuk mencetak tebal
+            teks_pembuka = (f"    {latar_belakang}, maka pada hari **{hari_ba}** pukul **{jam_ba.strftime('%H.%M')} WIB**, "
+                            f"tanggal **{tgl_indo}**, **PT PLN (Persero) UIT JBT, UPT BEKASI, ULTG BEKASI, "
+                            f"Sub-bidang Pemeliharaan Proteksi, Meter dan Otomasi** telah melaksanakan **{judul_ba}**, "
                             f"sesuai dengan rekomendasi serta prosedur dan dinyatakan :")
             
-            # Height=7 mensimulasikan Line Spacing 1.5
-            pdf.multi_cell(0, 7, txt=teks_pembuka, align='J') 
+            # markdown=True mengaktifkan fitur bold
+            pdf.multi_cell(0, 7, txt=teks_pembuka, align='J', markdown=True) 
             pdf.ln(4)
             
-            # Kembalikan ke margin normal
             pdf.set_left_margin(25)
             pdf.set_right_margin(12.5)
             
-            # Teks Selesai (Times 12)
             pdf.set_font("Times", 'B', 12)
             pdf.cell(w_aktif, 6, txt='"TELAH SELESAI DILAKSANAKAN"', ln=True, align='C')
             pdf.ln(4)
             
             pdf.set_font("Times", '', 11)
             pdf.cell(w_aktif, 6, txt="Demikian Berita Acara ini dibuat dan ditanda tangani dengan sebenar-benarnya.", ln=True)
-            pdf.ln(8)
+            pdf.ln(10)
             
-            # Tanda Tangan (Times 12)
+            # --- TANDA TANGAN PELAKSANA DI KANAN ---
             pdf.set_font("Times", '', 12)
-            pdf.cell(w_aktif, 6, txt=f"Bekasi, {tanggal_ba.strftime('%d %B %Y')}", ln=True, align='L')
-            pdf.cell(w_aktif, 6, txt="Pelaksana :", ln=True, align='L')
+            posisi_kanan = 120 # Koordinat X untuk menggeser ke kanan
+            
+            pdf.set_x(posisi_kanan)
+            pdf.cell(50, 6, txt=f"Bekasi, {tgl_indo}", ln=True)
+            pdf.set_x(posisi_kanan)
+            pdf.cell(50, 6, txt="Pelaksana :", ln=True)
             for i, orang in enumerate(pelaksana):
-                pdf.cell(w_aktif, 6, txt=f"{i+1}. {orang}", ln=True, align='L')
+                pdf.set_x(posisi_kanan)
+                pdf.cell(50, 6, txt=f"{i+1}. {orang}", ln=True)
             
-            pdf.ln(12) 
+            pdf.ln(15) 
             
-            # Matrix TTD
+            # --- MATRIX PENGESAH DI BAWAH ---
             y_awal_ttd = pdf.get_y()
             lebar_kolom = w_aktif / 3
             
@@ -573,7 +567,7 @@ elif st.session_state.halaman == 'catatan':
             pdf.ln(25)
             
             y_nama = pdf.get_y()
-            pdf.set_font("Times", 'BU', 12)
+            pdf.set_font("Times", 'B', 12)
             pdf.set_xy(25, y_nama)
             pdf.cell(lebar_kolom, 5, txt=f"( {tl_jar} )", align='C')
             pdf.set_xy(25 + lebar_kolom, y_nama)
@@ -588,8 +582,7 @@ elif st.session_state.halaman == 'catatan':
                 pdf.set_font("Times", 'B', 12)
                 pdf.cell(w_aktif, 7, txt=f"{huruf}. {judul}", ln=True)
                 pdf.set_font("Times", '', 12)
-                pdf.set_x(30) # Indent sedikit ke dalam
-                # Jarak baris diisi 7 (1.5 line spacing)
+                pdf.set_x(30) 
                 pdf.multi_cell(w_aktif - 5, 7, txt=isi)
                 pdf.ln(3)
 
@@ -611,7 +604,9 @@ elif st.session_state.halaman == 'catatan':
                     tmp_foto.write(foto_lapangan.getvalue())
                     tmp_foto_path = tmp_foto.name
                 
-                pdf.image(tmp_foto_path, x=46, w=130)
+                # Agar gambar selalu center di kertas A4 (Lebar 210mm)
+                # Jika lebar gambar 130mm, maka posisi X = (210 - 130) / 2 = 40mm
+                pdf.image(tmp_foto_path, x=40, w=130)
                 os.remove(tmp_foto_path)
 
             # --- EXPORT ---
