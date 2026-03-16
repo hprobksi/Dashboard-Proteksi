@@ -1,109 +1,68 @@
 import streamlit as st
 import pandas as pd
 
-# 1. BIKIN LAYOUT JADI LEBAR (FULL SCREEN) ALA DASHBOARD
-st.set_page_config(page_title="Dashboard Proteksi", layout="wide", page_icon="⚡")
+# 1. SETUP HALAMAN UNTUK HP (Centered)
+st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
+
+# 2. KODE RAHASIA (CSS) UNTUK MEMBUAT TOMBOL JADI KOTAK BESAR
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        height: 120px;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #2c2f33;
+        color: white;
+        border: none;
+    }
+    div.stButton > button:hover {
+        background-color: #40444b;
+        color: #00d2ff;
+        border: 1px solid #00d2ff;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.title("⚡ Menu Utama")
+st.write("Silakan pilih modul pemeliharaan:")
 
 # ==========================================
-# BAGIAN KIRI: SIDEBAR (MENU NAVIGASI)
+# MEMBUAT TAMPILAN GRID 2 KOLOM (SEPERTI HP)
 # ==========================================
-with st.sidebar:
-    st.title("⚡ PROTEKSI ULTG BEKASI")
-    st.write("Modul Pendukung Pemeliharaan")
-    st.divider()
-    
-    # Membuat tombol pilihan menu
-    menu_pilihan = st.radio(
-        "PILIH MENU UTAMA:",
-        ["🔌 Konfigurasi Test Plug", "🗺️ Wiring Diagram", "📝 Catatan & Berita Acara"]
-    )
+kolom1, kolom2 = st.columns(2)
 
-# ==========================================
-# BAGIAN TENGAH/KANAN: KONTEN UTAMA
-# ==========================================
-st.title(menu_pilihan)
+with kolom1:
+    btn_testplug = st.button("🔌\n\nTest Plug", use_container_width=True)
+    btn_catatan = st.button("📝\n\nLKP & BA", use_container_width=True)
+
+with kolom2:
+    btn_wiring = st.button("🗺️\n\nWiring Diagram", use_container_width=True)
+    btn_setting = st.button("⚙️\n\nSettings", use_container_width=True)
+
 st.divider()
 
-# --- HALAMAN 1: TEST PLUG ---
-if menu_pilihan == "🔌 Konfigurasi Test Plug":
-    st.write("Pilih Lokasi dan Jenis Relay untuk melihat panduan wiring Test Plug.")
+# ==========================================
+# LOGIKA KETIKA TOMBOL DIPENCET
+# ==========================================
+if btn_testplug:
+    st.subheader("🔌 Konfigurasi Test Plug")
     
-    # Membuat filter pencarian di atas tabel (mirip web TRION)
-    # ==========================================
-    # DATABASE MINI ASET GARDU INDUK
-    # ==========================================
-    # Format: { "Nama GI": { "Nama Bay": ["Relay 1", "Relay 2"] } }
-    database_aset = {
-        "GI Gandamekar": {
-            "Line Rajapaksi 1": ["LCD (MiCOM P545)", "OCR Backup"],
-            "Bay Trafo 1": ["Differential Trafo (NR PCS 978S)", "OCR / GFR"]
-        },
-        "GI New Tambun": {
-            "Line Muaratawar": ["LCD Main A (Siemens 7SL87)"],
-            "Line Jatiwaringin 1": ["LCD (Siemens 7SL87)", "OCR (Siemens 7SJ82)"],
-            "Kopel AB": ["OCR (Siemens 7SJ82)"]
-        },
-        "GI Poncol Baru": {
-            "Line Tambun 1": ["LCD (MiCOM P546)", "OCR Backup"]
-        }
-    }
+    # Masukkan filter GI dan Bay di sini (seperti kode sebelumnya)
+    st.info("Pilih GI dan Bay untuk melihat wiring Test Plug.")
+    gi = st.selectbox("Gardu Induk", ["Pilih...", "GI Gandamekar", "GI Tambun"])
+    if gi == "GI Gandamekar":
+        st.success("Menampilkan data untuk Gandamekar...")
+        # Lanjutkan logika tabel Test Plug Anda di sini...
 
-   
-    # Membuat filter pencarian di atas tabel (Dropdown Bertingkat)
-    kolom1, kolom2, kolom3 = st.columns(3)
-    
-    with kolom1:
-        # Mengambil daftar GI otomatis dari database_aset
-        daftar_gi = ["Pilih GI..."] + list(database_aset.keys())
-        pilihan_gi = st.selectbox("Gardu Induk", daftar_gi)
-        
-    with kolom2:
-        # Logika If: Jika GI sudah dipilih, tampilkan Bay yang ada di GI tersebut
-        if pilihan_gi != "Pilih GI...":
-            daftar_bay = ["Pilih Bay..."] + list(database_aset[pilihan_gi].keys())
-        else:
-            daftar_bay = ["Pilih Bay..."] # Kosong jika GI belum dipilih
-            
-        pilihan_bay = st.selectbox("Bay / Line", daftar_bay)
-        
-    with kolom3:
-        # Logika If: Jika Bay sudah dipilih, tampilkan Relay yang ada di Bay tersebut
-        if pilihan_bay != "Pilih Bay...":
-            daftar_relay = ["Pilih Relay..."] + database_aset[pilihan_gi][pilihan_bay]
-        else:
-            daftar_relay = ["Pilih Relay..."] # Kosong jika Bay belum dipilih
-            
-        pilihan_relay = st.selectbox("Nama / Fungsi Relay", daftar_relay)
+elif btn_wiring:
+    st.subheader("🗺️ Wiring Diagram Database")
+    st.warning("Modul sedang dikembangkan.")
 
-    st.write("") # Spasi kosong
-    st.divider()
+elif btn_catatan:
+    st.subheader("📝 Catatan Pemeliharaan")
+    st.text_area("Tulis temuan lapangan di sini:")
 
-    # ==========================================
-    # MENAMPILKAN TABEL TEST PLUG SESUAI RELAY
-    # ==========================================
-    # Kita buat logikanya membaca kata kunci merk dari pilihan_relay
-    if "MiCOM" in pilihan_relay:
-        st.subheader(f"Konfigurasi Pin Test Plug: {pilihan_relay}")
-        
-        data_pin = [
-            {"TERMINAL": "Pin 1, 3, 5, 7", "FUNGSI": "CT Fasa & Netral", "STATUS UJI": "Di-Shorting (Injeksi Arus)"},
-            {"TERMINAL": "Pin 13, 14, 15", "FUNGSI": "PT Tegangan", "STATUS UJI": "Injeksi Tegangan Normal"},
-            {"TERMINAL": "Pin 21, 22", "FUNGSI": "Kontak Trip ke PMT", "STATUS UJI": "Dilepas / Isolasi"}
-        ]
-        
-        df_pin = pd.DataFrame(data_pin)
-        st.dataframe(df_pin, use_container_width=True)
-        st.warning("⚠️ PENTING: Jangan lupa ubah setting menjadi Out of Service untuk loopback testing!")
-
-    elif "Siemens" in pilihan_relay or "NR" in pilihan_relay:
-        st.info(f"Database konfigurasi Test Plug untuk {pilihan_relay} sedang disusun...")
-
-
-# --- HALAMAN 2: WIRING DIAGRAM ---
-elif menu_pilihan == "🗺️ Wiring Diagram":
-    st.info("Nantinya, Anda bisa mengunggah dan menampilkan foto As-Built Drawing (PDF/JPG) di halaman ini per Bay.")
-
-# --- HALAMAN 3: CATATAN ---
-elif menu_pilihan == "📝 Catatan & Berita Acara":
-    st.info("Form untuk menginput data pengujian (LKP) dan mencetak Berita Acara PDF akan dibuat di sini.")
-    
+elif btn_setting:
+    st.subheader("⚙️ Pengaturan Aplikasi")
+    st.write("Versi 1.0.0")
