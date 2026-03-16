@@ -98,7 +98,17 @@ elif st.session_state.halaman == 'test_plug':
                     "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
-            }
+            },
+             "Bay Fajar 2": {
+                "Relay Distance": {
+                    "Merk": "Micom", "Tipe": "P546", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCR": {
+                    "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                }
+            },
         },
         "GI Tambun": {
             "Bay Trafo 1": {
