@@ -94,46 +94,6 @@ elif st.session_state.halaman == 'test_plug':
     st.divider()
     
     st.subheader("🔌 Konfigurasi Test Plug")
-    
-    # 1. DATABASE MINI TEST PLUG (Tempat Anda memasukkan data GI, Bay, dan Relay)
-    database_testplug = {
-        "GI Cikarang": {
-            "Bay Kopel": {
-                "Relay OCR": {
-                    "Merk": "GE Multilin",
-                    "Tipe": "P14D",
-                    "No Seri": "BLM",
-                    "Konfigurasi": [
-                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
-                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
-                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
-                    ]
-                }
-                },
-            "Bay Cikarang Listrindo 1": {
-                "Relay OCR": {
-                   "Merk": "GE Multilin",
-                    "Tipe": "P14D",
-                    "No Seri": "BLM",
-                    "Konfigurasi": [
-                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
-                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
-                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
-                    ]
-                }
-                },
-                 "Bay Cikarang Listrindo 2": {
-                "Relay OCR": {
-                   "Merk": "GE Multilin",
-                    "Tipe": "P14D",
-                    "No Seri": "BLM",
-                    "Konfigurasi": [
-                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
-                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
-                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
-                    ]
-                }
-                },
             # 1. DATABASE MINI TEST PLUG (Versi Perbaikan Syntax)
     database_testplug = {
         "GI Cikarang": {
@@ -215,9 +175,7 @@ elif st.session_state.halaman == 'test_plug':
                         {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
                         {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
                     ]
-            
-    }
-            }
+             }
         }
         },
         "GI Tambun": {
@@ -230,7 +188,7 @@ elif st.session_state.halaman == 'test_plug':
                 }
             }
         }
-    }
+    },
 
     # 2. MEMBUAT FILTER PENCARIAN BERTINGKAT (3 Kolom Sejajar)
     kolom_gi, kolom_bay, kolom_relay = st.columns(3)
