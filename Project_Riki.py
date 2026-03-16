@@ -68,7 +68,7 @@ if st.session_state.halaman == 'menu':
 elif st.session_state.halaman == 'test_plug':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
-    st.subheader("🔌 Konfigurasi Test Plug")
+    st.subheader("🔌 Konfigurasi Test Block")
 
     # 1. DATABASE (Didefinisikan di awal sebelum dipanggil dropdown)
     database_testplug = {
