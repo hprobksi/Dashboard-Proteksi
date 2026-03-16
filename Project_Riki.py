@@ -253,23 +253,6 @@ elif st.session_state.halaman == 'test_plug':
             st.info("⚠️ Tabel belum diinput.")
 
 # ==========================================
-# HALAMAN LAINNYA
-# ==========================================
-elif st.session_state.halaman == 'wiring':
-    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
-    st.subheader("🗺️ Wiring Diagram")
-    st.warning("Modul sedang dikembangkan.")
-
-elif st.session_state.halaman == 'catatan':
-    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
-    st.subheader("📝 Catatan Pemeliharaan")
-    st.text_area("Tulis temuan lapangan:")
-
-elif st.session_state.halaman == 'setting':
-    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
-    st.subheader("⚙️ Settings")
-    st.write("Versi 2.0.2 - Fixed Syntax")
-# ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
 # ==========================================
 elif st.session_state.halaman == 'wiring':
@@ -333,3 +316,17 @@ elif st.session_state.halaman == 'wiring':
             if file_upload:
                 st.success(f"✅ File '{file_upload.name}' berhasil dimuat!")
                 st.warning("Fitur penyimpanan permanen ke server sedang dikembangkan.")
+
+# ==========================================
+# HALAMAN LAINNYA
+# ==========================================
+
+elif st.session_state.halaman == 'catatan':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.subheader("📝 Catatan Pemeliharaan")
+    st.text_area("Tulis temuan lapangan:")
+
+elif st.session_state.halaman == 'setting':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.subheader("⚙️ Settings")
+    st.write("Versi 2.0.2 - Fixed Syntax")
