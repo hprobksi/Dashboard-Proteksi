@@ -280,27 +280,38 @@ elif st.session_state.halaman == 'test_plug':
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
 # ==========================================
-elif st.session_state.halaman == "wiring":
+elif st.session_state.halaman == 'wiring':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
-    st.subheader("📸 Dokumentasi Wiring Lapangan")
+    st.subheader("🗺️ Database & Dokumentasi Wiring")
 
-    st.info("Pilih lokasi, lalu gunakan kamera HP untuk memfoto wiring aktual atau upload PDF revisi.")
+    st.info("Pilih lokasi untuk melihat dokumen wiring asli (40GB) atau mengupload foto revisi terbaru.")
 
-    # 1. DATABASE LOKASI (Bisa disamakan dengan Test Plug agar konsisten)
+    # 1. DATABASE LOKASI & LINK GDRIVE
+    # Ganti tulisan "LINK_GDRIVE_XXX" dengan link share asli dari Google Drive Anda
     lokasi_gi = {
         "GI Gandamekar": {
-            "Bay Rajapaksi 1": ["Relay LCD", "Relay OCR"],
-            "Bay Rajapaksi 2": ["Relay LCD", "Relay OCR"]
+            "Bay Rajapaksi 1": {
+                "Relay LCD": "https://drive.google.com/file/d/LINK_GDRIVE_LCD_RAJAPAKSI1/view",
+                "Relay OCR": "https://drive.google.com/file/d/LINK_GDRIVE_OCR_RAJAPAKSI1/view"
+            },
+            "Bay Rajapaksi 2": {
+                "Relay LCD": "", # Kosongkan tanda kutip jika link belum ada
+                "Relay OCR": ""
+            }
         },
         "GI Cikarang": {
-            "Bay Kopel": ["Relay OCR"],
-            "Bay Fajar 1": ["Relay Distance", "Relay OCR"]
+            "Bay Kopel": {
+                "Relay OCR": "https://drive.google.com/file/d/LINK_GDRIVE_KOPEL_CIKARANG/view"
+            },
+            "Bay Fajar 1": {
+                "Relay Distance": "https://drive.google.com/file/d/LINK_GDRIVE_FAJAR1_DIST/view",
+                "Relay OCR": ""
+            }
         }
     }
 
-    # 2. FILTER PENCARIAN BERTINGKAT (Sama seperti Test Plug)
-    # Tambahkan 'key' agar Streamlit tidak bingung membedakan dropdown ini dengan halaman lain
+    # 2. FILTER PENCARIAN BERTINGKAT
     k_gi, k_bay, k_relay = st.columns(3)
     with k_gi:
         gi_w = st.selectbox("Gardu Induk", ["Pilih..."] + list(lokasi_gi.keys()), key="w_gi")
@@ -311,41 +322,54 @@ elif st.session_state.halaman == "wiring":
             bay_w = st.selectbox("Bay / Line", ["Pilih..."], key="w_bay")
     with k_relay:
         if bay_w != "Pilih...":
-            relay_w = st.selectbox("Jenis Relay", ["Pilih..."] + lokasi_gi[gi_w][bay_w], key="w_relay")
+            # Mengambil daftar relay dari dalam dictionary
+            relay_w = st.selectbox("Jenis Relay", ["Pilih..."] + list(lokasi_gi[gi_w][bay_w].keys()), key="w_relay")
         else:
             relay_w = st.selectbox("Jenis Relay", ["Pilih..."], key="w_relay")
 
     st.divider()
 
-    # 3. FITUR KAMERA DAN UPLOAD FILE
+    # 3. FITUR BACA & TULIS
     if relay_w != "Pilih...":
-        st.write(f"**📍 Target Dokumentasi:** {gi_w} ➔ {bay_w} ➔ {relay_w}")
+        st.write(f"**📍 Target Lokasi:** {gi_w} ➔ {bay_w} ➔ {relay_w}")
         
-        # Membuat 2 Tab: Satu untuk Kamera, Satu untuk Upload File
-        tab1, tab2 = st.tabs(["📸 Ambil Foto (Kamera)", "📂 Upload File (PDF/Gambar)"])
+        # Membuat 2 Tab Utama
+        tab_lihat, tab_update = st.tabs(["👁️ Lihat Wiring Asli", "📸 Tambah Revisi Baru"])
         
-        with tab1:
-            st.write("Jepret perubahan wiring atau as-built drawing langsung dari depan panel.")
-            foto = st.camera_input("Ambil Foto Aktual")
+        # --- TAB 1: MEMBUKA FILE 40GB DARI GDRIVE ---
+        with tab_lihat:
+            st.write("Akses *as-built drawing* asli yang tersimpan di server Google Drive.")
+            link_asli = lokasi_gi[gi_w][bay_w][relay_w]
             
-            if foto:
-                with st.spinner('Mengirim ke Google Drive... ⏳'):
-                    # Nama file otomatis pakai nama GI, Bay, dan Relay
-                    nama_foto = f"WIRING_{gi_w}_{bay_w}_{relay_w}.jpg".replace(" ", "_")
-                    sukses = upload_ke_gdrive(nama_foto, foto.getvalue(), "image/jpeg")
-                    if sukses:
-                        st.success(f"✅ Foto '{nama_foto}' berhasil disimpan permanen ke database!")
-                
-        with tab2:
-            st.write("Pilih file PDF atau gambar (JPG/PNG) dari memori HP Anda.")
-            file_upload = st.file_uploader("Pilih Dokumen", type=["pdf", "jpg", "jpeg", "png"])
-            
-            if file_upload:
-                with st.spinner('Mengunggah dokumen... ⏳'):
-                    sukses = upload_ke_gdrive(file_upload.name, file_upload.getvalue(), file_upload.type)
-                    if sukses:
-                        st.success(f"✅ Dokumen '{file_upload.name}' resmi tersimpan di database!")
+            if link_asli != "":
+                st.link_button("🚀 Buka PDF Wiring di GDrive", link_asli, type="primary", use_container_width=True)
+                st.info("💡 Teknisi akan diarahkan ke aplikasi Google Drive untuk melihat dokumen tanpa menghabiskan memori HP.")
+            else:
+                st.warning("⚠️ Link file wiring untuk lokasi ini belum diinput ke dalam database.")
 
+        # --- TAB 2: MENGUPLOAD REVISI KE GDRIVE ---
+        with tab_update:
+            st.write("Gunakan menu ini jika ada perubahan wiring/jumperan baru di lapangan.")
+            
+            # Sub-Tab untuk memisahkan Kamera dan File
+            subtab1, subtab2 = st.tabs(["📸 Kamera", "📂 Upload File"])
+            
+            with subtab1:
+                foto = st.camera_input("Jepret perubahan wiring")
+                if foto:
+                    with st.spinner('Mengirim ke Google Drive... ⏳'):
+                        nama_foto = f"REVISI_WIRING_{gi_w}_{bay_w}_{relay_w}.jpg".replace(" ", "_")
+                        sukses = upload_ke_gdrive(nama_foto, foto.getvalue(), "image/jpeg")
+                        if sukses:
+                            st.success(f"✅ Foto revisi '{nama_foto}' berhasil disimpan permanen ke database!")
+                    
+            with subtab2:
+                file_upload = st.file_uploader("Pilih Dokumen PDF/JPG dari HP", type=["pdf", "jpg", "jpeg", "png"])
+                if file_upload:
+                    with st.spinner('Mengunggah dokumen revisi... ⏳'):
+                        sukses = upload_ke_gdrive(file_upload.name, file_upload.getvalue(), file_upload.type)
+                        if sukses:
+                            st.success(f"✅ Dokumen revisi '{file_upload.name}' resmi tersimpan di database!")
 # ==========================================
 # HALAMAN LAINNYA
 # ==========================================
