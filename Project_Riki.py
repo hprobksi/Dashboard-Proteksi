@@ -56,10 +56,10 @@ if st.session_state.halaman == 'menu':
 
     kolom1, kolom2 = st.columns(2)
     with kolom1:
-        st.button("🔌\n\nTest Plug", type="primary", use_container_width=True, on_click=pindah_halaman, args=('test_plug',))
+        st.button("🔌\n\nTest Block", type="primary", use_container_width=True, on_click=pindah_halaman, args=('test_plug',))
         st.button("📝\n\nLKP & BA", type="primary", use_container_width=True, on_click=pindah_halaman, args=('catatan',))
     with kolom2:
-        st.button("🗺️\n\nWiring", type="primary", use_container_width=True, on_click=pindah_halaman, args=('wiring',))
+        st.button("🗺️\n\nWiring Diagram", type="primary", use_container_width=True, on_click=pindah_halaman, args=('wiring',))
         st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
 
 # ==========================================
