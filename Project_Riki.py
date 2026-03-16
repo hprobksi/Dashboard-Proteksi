@@ -1,85 +1,118 @@
 import streamlit as st
 import pandas as pd
 
-# 1. SETUP HALAMAN UNTUK HP (Centered)
+# 1. SETUP HALAMAN
 st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
 
-# 2. MENAMPILKAN LOGO PLN & JUDUL
-# Membuat 2 kolom agar logo berdampingan dengan teks judul
-col_logo, col_judul = st.columns([1, 4])
-with col_logo:
-    # Mengambil gambar logo PLN langsung dari internet
-    st.image("https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_PLN.png", width=60)
-with col_judul:
-    st.title("Menu Utama")
+# ==========================================
+# SISTEM NAVIGASI (DAYA INGAT APLIKASI)
+# ==========================================
+# Jika baru pertama kali dibuka, set ke halaman utama ('menu')
+if 'halaman' not in st.session_state:
+    st.session_state.halaman = 'menu'
 
-# 3. KODE RAHASIA (CSS) UNTUK TEMA BIRU PLN & TOMBOL KOTAK BESAR
+# Fungsi ajaib untuk mengganti halaman
+def pindah_halaman(nama_halaman):
+    st.session_state.halaman = nama_halaman
+
+# ==========================================
+# KODE RAHASIA (CSS) UNTUK TEMA & UKURAN IKON
+# ==========================================
 st.markdown("""
     <style>
-    /* Mengubah warna latar belakang aplikasi menjadi biru sangat muda (opsional) */
     .stApp {
         background-color: #f4f9f9;
     }
-    
-    /* Mengubah warna tombol menjadi Biru Khas PLN */
-    div.stButton > button:first-child {
-        height: 120px;
-        border-radius: 15px;
-        font-size: 16px;
-        font-weight: bold;
-        background-color: #007bb5; /* Warna Biru */
-        color: white;
-        border: none;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Efek bayangan */
+    /* Memperbesar tombol khusus tipe PRIMARY (Menu Utama) */
+    button[kind="primary"] {
+        height: 140px !important;
+        border-radius: 15px !important;
+        font-size: 24px !important; /* IKON & TEKS DIPERBESAR */
+        font-weight: bold !important;
+        background-color: #007bb5 !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
     }
-    
-    /* Efek saat tombol disentuh/diklik (Berubah Biru Gelap & Teks Kuning PLN) */
-    div.stButton > button:hover {
-        background-color: #005a87;
-        color: #ffcc00; /* Warna Kuning */
-        border: 2px solid #ffcc00;
+    button[kind="primary"]:hover {
+        background-color: #005a87 !important;
+        color: #ffcc00 !important;
+        border: 2px solid #ffcc00 !important;
+    }
+    /* Tombol KEMBALI (Secondary) agar ukurannya tetap normal/kecil */
+    button[kind="secondary"] {
+        font-size: 16px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.write("Silakan pilih modul pemeliharaan Gardu Induk:")
-st.divider()
+# ==========================================
+# HALAMAN 1: MENU UTAMA
+# ==========================================
+if st.session_state.halaman == 'menu':
+    col_logo, col_judul = st.columns([1, 4])
+    with col_logo:
+        st.image("https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_PLN.png", width=60)
+    with col_judul:
+        st.title("Menu Utama")
+
+    st.write("Silakan pilih modul pemeliharaan Gardu Induk:")
+    st.divider()
+
+    kolom1, kolom2 = st.columns(2)
+
+    # Tambahkan parameter type="primary" agar tombol ini membesar mengikuti CSS
+    with kolom1:
+        st.button("🔌\n\nTest Plug", type="primary", use_container_width=True, on_click=pindah_halaman, args=('test_plug',))
+        st.button("📝\n\nLKP & BA", type="primary", use_container_width=True, on_click=pindah_halaman, args=('catatan',))
+
+    with kolom2:
+        st.button("🗺️\n\nWiring", type="primary", use_container_width=True, on_click=pindah_halaman, args=('wiring',))
+        st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
+
 
 # ==========================================
-# MEMBUAT TAMPILAN GRID 2 KOLOM (SEPERTI HP)
+# HALAMAN 2: TEST PLUG
 # ==========================================
-kolom1, kolom2 = st.columns(2)
-
-with kolom1:
-    btn_testplug = st.button("🔌\n\nTest Plug", use_container_width=True)
-    btn_catatan = st.button("📝\n\nLKP & BA", use_container_width=True)
-
-with kolom2:
-    btn_wiring = st.button("🗺️\n\nWiring Diagram", use_container_width=True)
-    btn_setting = st.button("⚙️\n\nSettings", use_container_width=True)
-
-st.divider()
-
-# ==========================================
-# LOGIKA KETIKA TOMBOL DIPENCET
-# ==========================================
-if btn_testplug:
-    st.subheader("🔌 Konfigurasi Test Plug")
+elif st.session_state.halaman == 'test_plug':
+    # Tombol kembali ke menu utama (type="secondary" agar ukurannya kecil)
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
     
+    st.subheader("🔌 Konfigurasi Test Plug")
     st.info("Pilih GI dan Bay untuk melihat wiring Test Plug.")
+    
     gi = st.selectbox("Gardu Induk", ["Pilih...", "GI Gandamekar", "GI Tambun"])
     if gi == "GI Gandamekar":
         st.success("Menampilkan data untuk Gandamekar...")
-        # Lanjutkan logika tabel Test Plug Anda di sini nanti
+        # Nanti tambahkan database tabel Test Plug di sini
 
-elif btn_wiring:
+
+# ==========================================
+# HALAMAN 3: WIRING DIAGRAM
+# ==========================================
+elif st.session_state.halaman == 'wiring':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
     st.subheader("🗺️ Wiring Diagram Database")
     st.warning("Modul sedang dikembangkan.")
 
-elif btn_catatan:
+
+# ==========================================
+# HALAMAN 4: CATATAN (LKP)
+# ==========================================
+elif st.session_state.halaman == 'catatan':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
     st.subheader("📝 Catatan Pemeliharaan")
     st.text_area("Tulis temuan lapangan di sini:")
 
-elif btn_setting:
+
+# ==========================================
+# HALAMAN 5: SETTINGS
+# ==========================================
+elif st.session_state.halaman == 'setting':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
     st.subheader("⚙️ Pengaturan Aplikasi")
-    st.write("Versi 1.1.0 - Tema PLN")
+    st.write("Versi 2.0.0 - Navigasi Multi-Halaman")
