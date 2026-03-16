@@ -109,6 +109,26 @@ elif st.session_state.halaman == 'test_plug':
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
             },
+             "Bay Jababeka 1": {
+                "Relay LCD": {
+                    "Merk": "NR", "Tipe": "PCS 931", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCR": {
+                    "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                }
+            },
+            "Bay Jababeka 2": {
+                "Relay LCD": {
+                    "Merk": "SIFANG", "Tipe": "CSC 103", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCR": {
+                    "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                }
+            },
         },
         "GI Tambun": {
             "Bay Trafo 1": {
