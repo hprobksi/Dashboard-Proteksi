@@ -163,6 +163,48 @@ elif st.session_state.halaman == 'test_plug':
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                   }
             },
+            "Bay Trafo 2 KONSUMEN": {
+                  "Relay OCGF HV": {
+                    "Merk": "ABB", "Tipe": "REF615", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                  }
+            },
+            "Bay Trafo 3": {
+                "Relay DIFF": {
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCGF HV": {
+                    "Merk": "MICOM", "Tipe": "P122", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                  "Relay OCGF LV": {
+                    "Merk": "MICOM", "Tipe": "P122", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                  },
+                "Relay SBEF": {
+                    "Merk": "MICOM", "Tipe": "P14D", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                  }
+            },
+            "Bay Trafo 4": {
+                "Relay DIFF": {
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCGF HV": {
+                    "Merk": "MICOM", "Tipe": "P122", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                  "Relay OCGF LV": {
+                    "Merk": "MICOM", "Tipe": "P122", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                  },
+                "Relay SBEF": {
+                    "Merk": "MICOM", "Tipe": "P14D", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                  }
+            },
         },
         "GI Tambun": {
             "Bay Trafo 1": {
