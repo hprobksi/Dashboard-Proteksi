@@ -267,7 +267,7 @@ def upload_ke_gdrive(nama_file, byte_data, mime_type):
         layanan = build('drive', 'v3', credentials=creds)
         
         # 👇👇👇 MASUKKAN ID FOLDER GOOGLE DRIVE ANDA DI BAWAH INI 👇👇👇
-        ID_FOLDER = "GANTI_DENGAN_ID_FOLDER_ANDA" 
+        ID_FOLDER = "1gOjfORca3tVLDYJZfhAu0JiHuMKaEoAm" 
         
         metadata_file = {'name': nama_file, 'parents': [ID_FOLDER]}
         media = MediaIoBaseUpload(io.BytesIO(byte_data), mimetype=mime_type, resumable=True)
