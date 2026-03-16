@@ -18,29 +18,44 @@ def pindah_halaman(nama_halaman):
 # ==========================================
 # KODE RAHASIA (CSS) UNTUK TEMA & UKURAN IKON
 # ==========================================
+# ==========================================
+# KODE RAHASIA (CSS) UNTUK TEMA & UKURAN IKON
+# ==========================================
 st.markdown("""
     <style>
     .stApp {
         background-color: #f4f9f9;
     }
-    /* Memperbesar tombol khusus tipe PRIMARY (Menu Utama) */
+    
+    /* 1. MENGATUR KOTAK TOMBOLNYA */
     button[kind="primary"] {
         height: 140px !important;
         border-radius: 15px !important;
-        font-size: 24px !important; /* IKON & TEKS DIPERBESAR */
-        font-weight: bold !important;
         background-color: #007bb5 !important;
         color: white !important;
         border: none !important;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
     }
+    
+    /* 2. INI KUNCI RAHASIANYA: MENGATUR UKURAN IKON & TEKS DI DALAM KOTAK */
+    button[kind="primary"] p {
+        font-size: 35px !important; /* Ganti angka 35px ini jika ingin lebih raksasa lagi */
+        font-weight: bold !important;
+        line-height: 1.2 !important; /* Mengatur jarak atas-bawah antara ikon dan teks */
+    }
+    
+    /* 3. EFEK SAAT TOMBOL DISENTUH */
     button[kind="primary"]:hover {
         background-color: #005a87 !important;
         color: #ffcc00 !important;
         border: 2px solid #ffcc00 !important;
     }
-    /* Tombol KEMBALI (Secondary) agar ukurannya tetap normal/kecil */
-    button[kind="secondary"] {
+    button[kind="primary"]:hover p {
+        color: #ffcc00 !important; /* Memastikan teks juga ikut kuning saat disentuh */
+    }
+    
+    /* 4. TOMBOL KEMBALI AGAR TETAP KECIL */
+    button[kind="secondary"] p {
         font-size: 16px !important;
     }
     </style>
