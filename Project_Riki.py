@@ -218,6 +218,7 @@ elif st.session_state.halaman == 'test_plug':
             
     }
             }
+        }
         },
         "GI Tambun": {
             "Bay Trafo 1": {
