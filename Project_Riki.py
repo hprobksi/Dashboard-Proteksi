@@ -74,7 +74,7 @@ elif st.session_state.halaman == 'test_plug':
     database_testplug = {
         "GI Cikarang": {
             "Bay Kopel": {
-                "Relay OCR": {
+                "Relay OCGF": {
                     "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
                     "Konfigurasi": [
                         {"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"},
@@ -84,7 +84,7 @@ elif st.session_state.halaman == 'test_plug':
                 }
             },
             "Bay Cikarang Listrindo 1": {
-                "Relay OCR": {
+                "Relay OCGF": {
                     "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
@@ -94,7 +94,7 @@ elif st.session_state.halaman == 'test_plug':
                     "Merk": "Micom", "Tipe": "P546", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
-                "Relay OCR": {
+                "Relay OCGF": {
                     "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
@@ -104,7 +104,7 @@ elif st.session_state.halaman == 'test_plug':
                     "Merk": "Micom", "Tipe": "P546", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
-                "Relay OCR": {
+                "Relay OCGF": {
                     "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
@@ -114,7 +114,7 @@ elif st.session_state.halaman == 'test_plug':
                     "Merk": "NR", "Tipe": "PCS 931", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
-                "Relay OCR": {
+                "Relay OCGF": {
                     "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
@@ -124,10 +124,44 @@ elif st.session_state.halaman == 'test_plug':
                     "Merk": "SIFANG", "Tipe": "CSC 103", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
-                "Relay OCR": {
+                "Relay OCGF": {
                     "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
+            },
+              "Bay Rajapaksi 1": {
+                "Relay LCD": {
+                    "Merk": "MICOM", "Tipe": "P545", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCGF": {
+                    "Merk": "MICOM AREVA", "Tipe": "P122", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                }
+            },
+             "Bay Rajapaksi 2": {
+                "Relay LCD": {
+                    "Merk": "MICOM", "Tipe": "P545", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCGF": {
+                    "Merk": "SIEMENS", "Tipe": "7SJ62", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                }
+            },
+              "Bay Trafo 1": {
+                "Relay DIFF": {
+                    "Merk": "ABB", "Tipe": "RET650", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                "Relay OCGF HV + SBEF": {
+                    "Merk": "ABB", "Tipe": "REF615", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                },
+                  "Relay OCGF LV": {
+                    "Merk": "ABB", "Tipe": "REF615", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
+                  }
             },
         },
         "GI Tambun": {
