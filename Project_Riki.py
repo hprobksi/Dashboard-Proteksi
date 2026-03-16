@@ -279,7 +279,7 @@ def upload_ke_gdrive(nama_file, byte_data, mime_type):
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
 # ==========================================
-elif st.session_state.halaman == 'wiring':
+elif st.session_state.halaman == "wiring":
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
     st.subheader("📸 Dokumentasi Wiring Lapangan")
