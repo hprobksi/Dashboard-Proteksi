@@ -1,1 +1,85 @@
+import streamlit as st
+import pandas as pd
 
+# 1. SETUP HALAMAN UNTUK HP (Centered)
+st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
+
+# 2. MENAMPILKAN LOGO PLN & JUDUL
+# Membuat 2 kolom agar logo berdampingan dengan teks judul
+col_logo, col_judul = st.columns([1, 4])
+with col_logo:
+    # Mengambil gambar logo PLN langsung dari internet
+    st.image("https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_PLN.png", width=60)
+with col_judul:
+    st.title("Menu Utama")
+
+# 3. KODE RAHASIA (CSS) UNTUK TEMA BIRU PLN & TOMBOL KOTAK BESAR
+st.markdown("""
+    <style>
+    /* Mengubah warna latar belakang aplikasi menjadi biru sangat muda (opsional) */
+    .stApp {
+        background-color: #f4f9f9;
+    }
+    
+    /* Mengubah warna tombol menjadi Biru Khas PLN */
+    div.stButton > button:first-child {
+        height: 120px;
+        border-radius: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #007bb5; /* Warna Biru */
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Efek bayangan */
+    }
+    
+    /* Efek saat tombol disentuh/diklik (Berubah Biru Gelap & Teks Kuning PLN) */
+    div.stButton > button:hover {
+        background-color: #005a87;
+        color: #ffcc00; /* Warna Kuning */
+        border: 2px solid #ffcc00;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.write("Silakan pilih modul pemeliharaan Gardu Induk:")
+st.divider()
+
+# ==========================================
+# MEMBUAT TAMPILAN GRID 2 KOLOM (SEPERTI HP)
+# ==========================================
+kolom1, kolom2 = st.columns(2)
+
+with kolom1:
+    btn_testplug = st.button("🔌\n\nTest Plug", use_container_width=True)
+    btn_catatan = st.button("📝\n\nLKP & BA", use_container_width=True)
+
+with kolom2:
+    btn_wiring = st.button("🗺️\n\nWiring Diagram", use_container_width=True)
+    btn_setting = st.button("⚙️\n\nSettings", use_container_width=True)
+
+st.divider()
+
+# ==========================================
+# LOGIKA KETIKA TOMBOL DIPENCET
+# ==========================================
+if btn_testplug:
+    st.subheader("🔌 Konfigurasi Test Plug")
+    
+    st.info("Pilih GI dan Bay untuk melihat wiring Test Plug.")
+    gi = st.selectbox("Gardu Induk", ["Pilih...", "GI Gandamekar", "GI Tambun"])
+    if gi == "GI Gandamekar":
+        st.success("Menampilkan data untuk Gandamekar...")
+        # Lanjutkan logika tabel Test Plug Anda di sini nanti
+
+elif btn_wiring:
+    st.subheader("🗺️ Wiring Diagram Database")
+    st.warning("Modul sedang dikembangkan.")
+
+elif btn_catatan:
+    st.subheader("📝 Catatan Pemeliharaan")
+    st.text_area("Tulis temuan lapangan di sini:")
+
+elif btn_setting:
+    st.subheader("⚙️ Pengaturan Aplikasi")
+    st.write("Versi 1.1.0 - Tema PLN")
