@@ -134,17 +134,10 @@ elif st.session_state.halaman == 'test_plug':
                     ]
                 }
                 },
-             "Bay Fajar 1": {
-                "Relay Distance": {
-                   "Merk": "Micom",
-                    "Tipe": "P546",
-                    "No Seri": "BLM",
-                    "Konfigurasi": [
-                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
-                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
-                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
-                    ]
-                },
+            # 1. DATABASE MINI TEST PLUG (Versi Perbaikan Syntax)
+    database_testplug = {
+        "GI Cikarang": {
+            "Bay Kopel": {
                 "Relay OCR": {
                     "Merk": "GE Multilin",
                     "Tipe": "P14D",
@@ -155,10 +148,56 @@ elif st.session_state.halaman == 'test_plug':
                         {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
                     ]
                 }
-             },
+            },
+            "Bay Cikarang Listrindo 1": {
+                "Relay OCR": {
+                    "Merk": "GE Multilin",
+                    "Tipe": "P14D",
+                    "No Seri": "BLM",
+                    "Konfigurasi": [
+                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
+                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
+                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
+                    ]
+                }
+            },
+            "Bay Cikarang Listrindo 2": {
+                "Relay OCR": {
+                    "Merk": "GE Multilin",
+                    "Tipe": "P14D",
+                    "No Seri": "BLM",
+                    "Konfigurasi": [
+                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
+                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
+                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
+                    ]
+                }
+            },
+            "Bay Fajar 1": {
+                "Relay Distance": {
+                    "Merk": "Micom",
+                    "Tipe": "P546",
+                    "No Seri": "BLM",
+                    "Konfigurasi": [
+                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
+                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
+                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
+                    ]
+                }, # <-- Koma di sini penting
+                "Relay OCR": {
+                    "Merk": "GE Multilin",
+                    "Tipe": "P14D",
+                    "No Seri": "BLM",
+                    "Konfigurasi": [
+                        {"PIN / TERMINAL": "1, 3, 5, 7", "FUNGSI": "CT Arus Fasa & Netral", "TINDAKAN UJI": "Di-Shorting (Arus Injeksi)"},
+                        {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
+                        {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
+                    ]
+                }
+            },
             "Bay Fajar 2": {
                 "Relay Distance": {
-                   "Merk": "Micom",
+                    "Merk": "Micom",
                     "Tipe": "P546",
                     "No Seri": "BLM",
                     "Konfigurasi": [
@@ -166,7 +205,7 @@ elif st.session_state.halaman == 'test_plug':
                         {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
                         {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
                     ]
-                }
+                }, # <-- Koma di sini juga penting
                 "Relay OCR": {
                     "Merk": "GE Multilin",
                     "Tipe": "P14D",
@@ -176,8 +215,9 @@ elif st.session_state.halaman == 'test_plug':
                         {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
                         {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
                     ]
-                }
-             },
+            
+    }
+            }
         },
         "GI Tambun": {
             "Bay Trafo 1": {
