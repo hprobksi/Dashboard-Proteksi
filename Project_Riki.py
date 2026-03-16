@@ -144,7 +144,7 @@ elif st.session_state.halaman == 'test_plug':
                         {"PIN / TERMINAL": "13, 14, 15", "FUNGSI": "PT Tegangan", "TINDAKAN UJI": "Injeksi Tegangan Normal"},
                         {"PIN / TERMINAL": "21, 22", "FUNGSI": "Kontak Trip PMT", "TINDAKAN UJI": "Dilepas / Isolasi"}
                     ]
-                }
+                },
                 "Relay OCR": {
                     "Merk": "GE Multilin",
                     "Tipe": "P14D",
