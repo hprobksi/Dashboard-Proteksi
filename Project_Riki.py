@@ -388,7 +388,7 @@ elif st.session_state.halaman == 'catatan':
     st.subheader("📝 Generator BA (Sistem Template Word)")
     st.info("Sistem ini menggunakan file template_ba.docx. Hasil dijamin 100% identik dengan format resmi.")
 
-    # 1. FORM INPUT DATA (Sama seperti sebelumnya)
+    # 1. FORM INPUT DATA
     with st.expander("1. Identitas Pekerjaan", expanded=True):
         in_no_ba = st.text_input("Nomor BA", value="001 /BAPS/NWTBN/ULTG-BKSI/III/2026")
         in_judul = st.text_area("Judul Pekerjaan (Kapital)", value="RESETTING TEGANGAN REFERENSI DAN BANDWITH AVR TRAFO #1")
@@ -409,7 +409,8 @@ elif st.session_state.halaman == 'catatan':
         in_kegiatan = st.text_area("Langkah Kegiatan", value="1. Pengecekan setting\n2. Resetting Parameter")
         in_anomali = st.text_area("Anomali", value="Nihil")
         in_perbaikan = st.text_area("Langkah Perbaikan", value="Nihil")
-        in_tertunda = text_input("Pekerjaan Tertunda", value="Nihil")
+        # --- TYPO SUDAH DIPERBAIKI DI BAWAH INI (st.text_input) ---
+        in_tertunda = st.text_input("Pekerjaan Tertunda", value="Nihil") 
         in_kesimpulan = st.text_area("Kesimpulan", value="Selesai dan aman.")
 
     with st.expander("4. Tim Pelaksana & Pengesahan"):
@@ -434,14 +435,12 @@ elif st.session_state.halaman == 'catatan':
     if st.button("📄 Buat Dokumen BA", type="primary", use_container_width=True):
         with st.spinner("Menyuntikkan data ke dalam Template Word... ⏳"):
             try:
-                # Membuka file cetakan dari GitHub
                 doc = DocxTemplate("template_ba.docx")
                 
-                # Format Tanggal Indonesia
                 bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
                 tgl_format = f"{in_tgl.day} {bulan_indo[in_tgl.month - 1]} {in_tgl.year}"
                 
-                # Memasukkan data dari Streamlit ke variabel Template
+                # Kamus Data untuk disuntikkan ke Word
                 context = {
                     'no_ba': in_no_ba,
                     'judul_ba': in_judul,
@@ -461,29 +460,32 @@ elif st.session_state.halaman == 'catatan':
                     'tl_jar': in_tl_jar,
                     'up2d': in_up2d,
                     'tl_har': in_tl_har,
-                    'foto_lampiran': '' # Kosongkan dulu
+                    'foto_lampiran': '', 
+                    'ttd_tl_jar': '' # Tempat untuk TTD
                 }
                 
-                # Jika ada foto, sisipkan ke dalam Word dengan lebar presisi 130mm
+                # --- LOGIKA MENYISIPKAN FOTO LAMPIRAN ---
                 if in_foto:
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_foto:
                         tmp_foto.write(in_foto.getvalue())
                         tmp_path = tmp_foto.name
-                    # Sisipkan gambar ke variabel foto_lampiran
+                    # Menyisipkan foto ke tag {{ foto_lampiran }}, lebar otomatis diatur ke 130mm
                     context['foto_lampiran'] = InlineImage(doc, tmp_path, width=Mm(130))
 
-                # Render (Suntikkan data ke Word)
+                # --- LOGIKA MENYISIPKAN SCAN TTD (Contoh) ---
+                # Jika file ttd_jaenal.png sudah Anda upload ke GitHub, kode ini akan memasukkannya
+                if os.path.exists("ttd_jaenal.png"):
+                    # Lebar TTD diatur 30mm agar proporsional di atas nama
+                    context['ttd_tl_jar'] = InlineImage(doc, "ttd_jaenal.png", width=Mm(30))
+
                 doc.render(context)
                 
-                # Simpan Hasilnya Sementara
                 file_output = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
                 doc.save(file_output.name)
                 
-                # Siapkan untuk Didownload
                 with open(file_output.name, "rb") as f:
                     docx_bytes = f.read()
                 
-                # Bersihkan file sementara
                 os.remove(file_output.name)
                 if in_foto:
                     os.remove(tmp_path)
