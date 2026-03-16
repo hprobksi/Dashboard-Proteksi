@@ -17,6 +17,26 @@ if 'halaman' not in st.session_state:
 
 def pindah_halaman(nama_halaman):
     st.session_state.halaman = nama_halaman
+    # ==========================================
+# FUNGSI AJAIB: UPLOAD KE GOOGLE DRIVE
+# ==========================================
+def upload_ke_gdrive(nama_file, byte_data, mime_type):
+    try:
+        rahasia = json.loads(st.secrets["google_credentials"])
+        scopes = ['https://www.googleapis.com/auth/drive.file']
+        creds = service_account.Credentials.from_service_account_info(rahasia, scopes=scopes)
+        layanan = build('drive', 'v3', credentials=creds)
+        
+        # 👇👇👇 MASUKKAN ID FOLDER GOOGLE DRIVE ANDA DI BAWAH INI 👇👇👇
+        ID_FOLDER = "1gOjfORca3tVLDYJZfhAu0JiHuMKaEoAm" 
+        
+        metadata_file = {'name': nama_file, 'parents': [ID_FOLDER]}
+        media = MediaIoBaseUpload(io.BytesIO(byte_data), mimetype=mime_type, resumable=True)
+        layanan.files().create(body=metadata_file, media_body=media, fields='id').execute()
+        return True
+    except Exception as e:
+        st.error(f"Gagal terhubung ke server: {e}")
+        return False
 
 # ==========================================
 # CSS TEMA & UKURAN IKON
@@ -256,26 +276,7 @@ elif st.session_state.halaman == 'test_plug':
             st.table(pd.DataFrame(data["Konfigurasi"]))
         else:
             st.info("⚠️ Tabel belum diinput.")
-# ==========================================
-# FUNGSI AJAIB: UPLOAD KE GOOGLE DRIVE
-# ==========================================
-def upload_ke_gdrive(nama_file, byte_data, mime_type):
-    try:
-        rahasia = json.loads(st.secrets["google_credentials"])
-        scopes = ['https://www.googleapis.com/auth/drive.file']
-        creds = service_account.Credentials.from_service_account_info(rahasia, scopes=scopes)
-        layanan = build('drive', 'v3', credentials=creds)
-        
-        # 👇👇👇 MASUKKAN ID FOLDER GOOGLE DRIVE ANDA DI BAWAH INI 👇👇👇
-        ID_FOLDER = "1gOjfORca3tVLDYJZfhAu0JiHuMKaEoAm" 
-        
-        metadata_file = {'name': nama_file, 'parents': [ID_FOLDER]}
-        media = MediaIoBaseUpload(io.BytesIO(byte_data), mimetype=mime_type, resumable=True)
-        layanan.files().create(body=metadata_file, media_body=media, fields='id').execute()
-        return True
-    except Exception as e:
-        st.error(f"Gagal terhubung ke server: {e}")
-        return False
+
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
 # ==========================================
