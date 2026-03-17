@@ -385,10 +385,27 @@ elif st.session_state.halaman == 'catatan':
     
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
-    st.subheader("📝 Generator BA (Sistem Template Word)")
-    st.info("Sistem ini menggunakan file template_ba.docx. Hasil dijamin 100% identik dengan format resmi.")
+    st.subheader("📝 Generator BA (Otomasi Cerdas)")
 
-    # 1. FORM INPUT DATA
+    # --- 1. DATABASE TEMPLATE KEGIATAN ---
+    db_kegiatan = {
+        "Resetting AVR": "1. Melakukan pengecekan setting yang terpasang\n2. Melakukan Resetting Parameter AVR\n3. Melakukan pengecekan bersama setting pasca resetting\n4. Pengujian individu / fungsi unjuk kerja\n5. Dokumentasi",
+        "Remote Riding": "1. Persiapan koneksi VPN ke gateway / server\n2. Login ke relay target via remote akses\n3. Unduh data event dan disturbance record\n4. Analisa hasil unduhan record gangguan\n5. Dokumentasi",
+        "Resetting Relay": "1. Backup setting parameter lama\n2. Upload setting parameter baru sesuai rekomendasi\n3. Uji fungsi trip (dummy test)\n4. Normalisasi sistem proteksi\n5. Dokumentasi",
+        "Lainnya (Ketik Manual)": ""
+    }
+
+    # --- 2. DATABASE FILE TANDA TANGAN ---
+    # Sesuaikan "nama_file.png" dengan nama gambar yang Anda upload ke GitHub
+    db_ttd = {
+        "Kosongkan (Tanda Tangan Basah)": "",
+        "M JAENAL M": "ttd_jaenal.png",
+        "ORRY VERNANDA": "ttd_orry.png",
+        "ERVAN JAGI M W": "ttd_ervan.png",
+        "RIKI H": "ttd_riki.png"
+    }
+
+    # --- FORM INPUT DATA ---
     with st.expander("1. Identitas Pekerjaan", expanded=True):
         in_no_ba = st.text_input("Nomor BA", value="001 /BAPS/NWTBN/ULTG-BKSI/III/2026")
         in_judul = st.text_area("Judul Pekerjaan (Kapital)", value="RESETTING TEGANGAN REFERENSI DAN BANDWITH AVR TRAFO #1")
@@ -406,80 +423,100 @@ elif st.session_state.halaman == 'catatan':
         in_alat = st.text_input("Peralatan Terpasang", value="AVR Trafo #1 GIS 150kV New Tambun")
 
     with st.expander("3. Hasil Pekerjaan"):
-        in_kegiatan = st.text_area("Langkah Kegiatan", value="1. Pengecekan setting\n2. Resetting Parameter")
-        in_anomali = st.text_area("Anomali", value="Nihil")
-        in_perbaikan = st.text_area("Langkah Perbaikan", value="Nihil")
-        # --- TYPO SUDAH DIPERBAIKI DI BAWAH INI (st.text_input) ---
-        in_tertunda = st.text_input("Pekerjaan Tertunda", value="Nihil") 
-        in_kesimpulan = st.text_area("Kesimpulan", value="Selesai dan aman.")
+        # Fitur Otomasi Template Kegiatan
+        pilih_template = st.selectbox("Pilih Template Kegiatan", list(db_kegiatan.keys()))
+        in_kegiatan = st.text_area("Langkah Kegiatan", value=db_kegiatan[pilih_template], height=130)
+        
+        col_a, col_b = st.columns(2)
+        with col_a:
+            in_anomali = st.text_area("Anomali", value="Nihil")
+        with col_b:
+            in_perbaikan = st.text_area("Langkah Perbaikan", value="Nihil")
+        in_tertunda = st.text_input("Pekerjaan Tertunda", value="Nihil")
+        in_kesimpulan = st.text_area("Kesimpulan", value="Telah dilakukan pekerjaan sesuai dengan rekomendasi dengan hasil uji baik.")
 
     with st.expander("4. Tim Pelaksana & Pengesahan"):
+        st.write("**Pelaksana Lapangan:**")
         in_p1 = st.text_input("Pelaksana 1", value="Edward D")
         in_p2 = st.text_input("Pelaksana 2", value="Rizky Wira H")
         in_p3 = st.text_input("Pelaksana 3", value="Riki H")
         
+        st.divider()
+        st.write("**Pejabat Pengesah:**")
         k1, k2, k3 = st.columns(3)
+        
         with k1:
-            in_tl_jar = st.text_input("TL Jar", value="M JAENAL M")
+            in_jab_kiri = st.text_input("Jabatan (Kiri)", value="TL Jar GIS Tambun")
+            in_nama_kiri = st.selectbox("Nama (Kiri)", list(db_ttd.keys()), index=1)
+            
         with k2:
-            in_up2d = st.text_input("UP2D", value="ORRY VERNANDA")
+            # Fitur Kolom Tengah Opsional
+            pakai_tengah = st.checkbox("Aktifkan Pengesah Tengah", value=True)
+            if pakai_tengah:
+                in_jab_tengah = st.text_input("Jabatan (Tengah)", value="UP2D")
+                in_nama_tengah = st.selectbox("Nama (Tengah)", list(db_ttd.keys()), index=2)
+            else:
+                in_jab_tengah, in_nama_tengah = "", ""
+                
         with k3:
-            in_tl_har = st.text_input("TL Harpromet", value="ERVAN JAGI M W")
+            in_jab_kanan = st.text_input("Jabatan (Kanan)", value="TL Harpromet & Otomasi")
+            in_nama_kanan = st.selectbox("Nama (Kanan)", list(db_ttd.keys()), index=3)
 
     st.write("### 📸 Lampiran Dokumentasi")
-    in_foto = st.file_uploader("Upload Foto Lapangan", type=["jpg", "jpeg", "png"])
+    in_foto = st.file_uploader("Upload Foto Lapangan (Opsional)", type=["jpg", "jpeg", "png"])
 
     st.divider()
 
-    # 2. LOGIKA PENYUNTIKAN TEMPLATE
+    # --- LOGIKA PENYUNTIKAN TEMPLATE ---
     if st.button("📄 Buat Dokumen BA", type="primary", use_container_width=True):
-        with st.spinner("Menyuntikkan data ke dalam Template Word... ⏳"):
+        with st.spinner("Merakit BA & Menempelkan Tanda Tangan... ⏳"):
             try:
                 doc = DocxTemplate("template_ba.docx")
                 
                 bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
                 tgl_format = f"{in_tgl.day} {bulan_indo[in_tgl.month - 1]} {in_tgl.year}"
                 
-                # Kamus Data untuk disuntikkan ke Word
+                # Menyiapkan Kamus Data Teks
                 context = {
-                    'no_ba': in_no_ba,
-                    'judul_ba': in_judul,
-                    'latar_belakang': in_latar,
-                    'hari': in_hari,
-                    'tgl': tgl_format,
-                    'jam': in_jam.strftime('%H.%M'),
-                    'alat': in_alat,
-                    'kegiatan': in_kegiatan,
-                    'anomali': in_anomali,
-                    'perbaikan': in_perbaikan,
-                    'tertunda': in_tertunda,
-                    'kesimpulan': in_kesimpulan,
-                    'pelaksana_1': in_p1,
-                    'pelaksana_2': in_p2,
-                    'pelaksana_3': in_p3,
-                    'tl_jar': in_tl_jar,
-                    'up2d': in_up2d,
-                    'tl_har': in_tl_har,
-                    'foto_lampiran': '', 
-                    'ttd_tl_jar': '' # Tempat untuk TTD
+                    'no_ba': in_no_ba, 'judul_ba': in_judul, 'latar_belakang': in_latar,
+                    'hari': in_hari, 'tgl': tgl_format, 'jam': in_jam.strftime('%H.%M'),
+                    'alat': in_alat, 'kegiatan': in_kegiatan, 'anomali': in_anomali,
+                    'perbaikan': in_perbaikan, 'tertunda': in_tertunda, 'kesimpulan': in_kesimpulan,
+                    'pelaksana_1': in_p1, 'pelaksana_2': in_p2, 'pelaksana_3': in_p3,
+                    
+                    # Logika Jabatan & Nama (Tanda kurung dibuat otomatis jika ada isinya)
+                    'jab_kiri': in_jab_kiri, 
+                    'jab_tengah': in_jab_tengah, 
+                    'jab_kanan': in_jab_kanan,
+                    'nama_kiri': f"( {in_nama_kiri} )" if in_nama_kiri and in_nama_kiri != "Kosongkan (Tanda Tangan Basah)" else "",
+                    'nama_tengah': f"( {in_nama_tengah} )" if in_nama_tengah and in_nama_tengah != "Kosongkan (Tanda Tangan Basah)" else "",
+                    'nama_kanan': f"( {in_nama_kanan} )" if in_nama_kanan and in_nama_kanan != "Kosongkan (Tanda Tangan Basah)" else "",
+                    
+                    'ttd_kiri': '', 'ttd_tengah': '', 'ttd_kanan': '', 'foto_lampiran': ''
                 }
                 
-                # --- LOGIKA MENYISIPKAN FOTO LAMPIRAN ---
+                # Fungsi cerdas untuk menyisipkan TTD berdasarkan nama
+                def sisipkan_ttd(nama_pejabat):
+                    if nama_pejabat in db_ttd and db_ttd[nama_pejabat] != "":
+                        file_gambar = db_ttd[nama_pejabat]
+                        if os.path.exists(file_gambar): # Cek apakah file ada di server GitHub
+                            return InlineImage(doc, file_gambar, width=Mm(30)) # Lebar TTD 3cm
+                    return '' # Kosongkan jika tidak ketemu gambar
+
+                # Eksekusi Stempel Tanda Tangan
+                context['ttd_kiri'] = sisipkan_ttd(in_nama_kiri)
+                context['ttd_tengah'] = sisipkan_ttd(in_nama_tengah)
+                context['ttd_kanan'] = sisipkan_ttd(in_nama_kanan)
+                
+                # Eksekusi pemasangan Foto Lampiran (Lebar 13 cm)
                 if in_foto:
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_foto:
                         tmp_foto.write(in_foto.getvalue())
                         tmp_path = tmp_foto.name
-                    # Menyisipkan foto ke tag {{ foto_lampiran }}, lebar otomatis diatur ke 130mm
                     context['foto_lampiran'] = InlineImage(doc, tmp_path, width=Mm(130))
 
-                # --- LOGIKA MENYISIPKAN SCAN TTD (Contoh) ---
-                # Jika file ttd_jaenal.png sudah Anda upload ke GitHub, kode ini akan memasukkannya
-                if os.path.exists("ttd_jaenal.png"):
-                    # Lebar TTD diatur 30mm agar proporsional di atas nama
-                    context['ttd_tl_jar'] = InlineImage(doc, "ttd_jaenal.png", width=Mm(30))
-
+                # Render & Simpan
                 doc.render(context)
-                
                 file_output = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
                 doc.save(file_output.name)
                 
@@ -490,16 +527,16 @@ elif st.session_state.halaman == 'catatan':
                 if in_foto:
                     os.remove(tmp_path)
 
-                st.success("✅ Dokumen BA berhasil dirakit dengan sempurna!")
+                st.success("✅ Dokumen BA dengan Tanda Tangan berhasil dirakit!")
                 st.download_button(
-                    label="⬇️ Download BA (Word .docx)",
+                    label="⬇️ Download BA Siap Cetak (Word .docx)",
                     data=docx_bytes,
                     file_name=f"BA_{in_alat.replace(' ', '_')}.docx",
                     mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                     type="primary"
                 )
             except Exception as e:
-                st.error(f"Terjadi kesalahan. Pastikan file 'template_ba.docx' sudah di-upload ke GitHub. Detail Error: {e}")
+                st.error(f"Error: Pastikan template_ba.docx & gambar TTD sudah di-upload ke GitHub. Detail: {e}")
 # ==========================================
 # HALAMAN 5: SETTINGS
 # ==========================================
