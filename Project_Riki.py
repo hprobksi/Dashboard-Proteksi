@@ -109,7 +109,7 @@ elif st.session_state.halaman == 'test_plug':
                         {"PIN": "13, 14, 15", "FUNGSI": "PT Tegangan", "AKSI": "Normal"},
                         {"PIN": "21, 22", "FUNGSI": "Trip PMT", "AKSI": "Isolasi"}
                     ],
-                    "Catatan": "Perhatikan polaritas CT. Pastikan pin trip PMT diisolasi terlebih dahulu sebelum menginjeksi arus."
+                    "Catatan Bawaan": "Perhatikan polaritas CT. Pastikan pin trip PMT diisolasi terlebih dahulu sebelum menginjeksi arus."
                 }
             },
             "Bay Cikarang Listrindo 1": {
