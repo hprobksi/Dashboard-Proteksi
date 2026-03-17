@@ -585,41 +585,44 @@ elif st.session_state.halaman == 'ik':
 
     # --- DATABASE INSTRUKSI KERJA ---
     # Anda bisa menambahkan alat uji baru di dalam kurung kurawal ini
-    db_ik = {
-        "Alat Uji Kapasitas Baterai (TORKEL)": {
-            "Fungsi": "Alat ukur untuk menguji kapasitas (discharge test) baterai 110V DC di Gardu Induk.",
+    db_ik = "Megger TORKEL 900-Series (Discharge Test)": {
+            "Fungsi": "Alat ukur untuk menguji kapasitas baterai (discharge test) di gardu induk menggunakan beban arus konstan, daya konstan, atau resistansi konstan[cite: 1958].",
             "Persiapan": [
-                "Pastikan baterai dalam kondisi full charge sebelum pengujian.",
-                "Siapkan APD lengkap (Sarung tangan karet, kacamata safety).",
-                "Siapkan kabel konektor Torkel dan beban tambahan (TXL) jika kapasitas baterai besar."
+                "Pastikan sirkulasi udara di ruang baterai sangat baik, karena proses pengujian (discharge) dapat menghasilkan gas hidrogen dan memicu ledakan jika ada percikan[cite: 2020].",
+                "Pastikan jarak bebas di sekitar TORKEL minimal 1.5 meter agar sirkulasi udara kipas pendingin tidak terhalang (jangan letakkan alat saling berdempetan)[cite: 2040, 2041].",
+                "Hubungkan TORKEL ke sumber listrik AC (mains) dan nyalakan saklar daya alat[cite: 2500]."
             ],
             "Langkah Kerja": [
-                "Hubungkan kabel power Torkel ke sumber AC 220V yang aman.",
-                "Hubungkan kabel sensing (merah/hitam) ke kutub (+) dan (-) baterai. Pastikan capit buaya merekat kuat.",
-                "Hubungkan kabel load/beban utama ke kutub (+) dan (-) baterai.",
-                "Nyalakan Torkel, masuk ke menu konfigurasi.",
-                "Set parameter: Tegangan baterai (110V), Arus discharge sesuai kapasitas baterai, dan Cut-off voltage (misal 90V).",
-                "Tekan tombol START untuk memulai pengujian.",
-                "Selama proses, lakukan pengukuran tegangan per sel (cell test) menggunakan multimeter setiap 1 jam."
+                {
+                    "teks": "Pasang kabel arus utama dengan urutan yang benar: Pasang kabel negatif (-) dari TORKEL ke baterai, kemudian pasang kabel positif (+) ke baterai lalu ke terminal TORKEL[cite: 2524, 2525, 2526, 2527].",
+                    "gambar": "ik_torkel_kabel.jpg" # Ganti dengan nama foto Anda di GitHub (opsional)
+                },
+                {
+                    "teks": "Pasang kabel kecil 'Voltage Sense' langsung ke kutub baterai (jika kabel arus utama cukup panjang). Ini sangat disarankan agar pembacaan tegangan drop di layar lebih akurat[cite: 2506, 2507].",
+                    "gambar": None
+                },
+                {
+                    "teks": "Pada layar sentuh, pilih menu 'TEST', tekan 'Test Method' (pilih 'Constant I' untuk arus konstan), dan masukkan nilai arus pengujian[cite: 2546, 2547].",
+                    "gambar": "ik_torkel_menu.jpg" # Ganti dengan nama foto Anda di GitHub (opsional)
+                },
+                {
+                    "teks": "SANGAT PENTING: Aktifkan batas 'Warning' dan 'Stop Limits' untuk melindungi baterai. Atur batas tegangan bawah (Cut-off voltage), batas waktu maksimum, atau batas kapasitas Ah tercapai[cite: 2210, 2211, 2212, 2213].",
+                    "gambar": None
+                },
+                {
+                    "teks": "Tunggu hingga tulisan 'Connected ready' muncul di layar informasi bawah, kemudian tekan tombol START (▶) berwarna hijau untuk memulai pengujian[cite: 2552, 2553].",
+                    "gambar": None
+                },
+                {
+                    "teks": "Setelah pengujian selesai dan alat di-STOP, lepaskan kabel dengan urutan kebalikan dari saat memasang[cite: 2563, 2567]. Peringatan: JANGAN PERNAH melepas capit kabel saat pengujian masih berjalan karena akan menimbulkan bunga api[cite: 2561]!",
+                    "gambar": None
+                }
             ],
-            "Perhatian": "⚠️ Pastikan polaritas kabel (+) dan (-) TIDAK TERBALIK. Ruang baterai harus memiliki ventilasi yang baik karena proses discharge menghasilkan gas/panas."
+            "Catatan Pengalaman": """
+**💡 Catatan Pengalaman Lapangan:**
+*(Silakan hapus teks ini dan ketikkan pengalaman Mas Riki di sini. Misalnya: "Perhatikan saat memasang capit buaya ke kepala baterai, pastikan tidak goyang karena arus besar bisa membuat terminal panas/meleleh", atau tips lainnya)*
+"""
         },
-        "Alat Uji Tahanan Kontak (Micro Ohmmeter)": {
-            "Fungsi": "Alat untuk mengukur nilai tahanan kontak (Contact Resistance) pada PMT atau PMS.",
-            "Persiapan": [
-                "Pastikan PMT/PMS dalam kondisi TERTUTUP (Close).",
-                "Pastikan peralatan sudah BEBAS TEGANGAN dan kabel grounding lokal terpasang di salah satu sisi."
-            ],
-            "Langkah Kerja": [
-                "Hubungkan kabel injeksi arus (Current/C) merah dan hitam ke terminal atas dan bawah PMT.",
-                "Hubungkan kabel pengukur tegangan (Voltage/P) merah dan hitam di bagian DALAM dekat titik kontak PMT.",
-                "Nyalakan alat dan pilih arus injeksi yang sesuai (Standar biasanya 100A atau 200A).",
-                "Tekan tombol START / TEST untuk menginjeksi arus.",
-                "Catat nilai tahanan kontak yang muncul di layar (dalam satuan mikro-Ohm / μΩ)."
-            ],
-            "Perhatian": "⚠️ JANGAN PERNAH melepas capit kabel saat alat sedang melakukan injeksi arus tinggi!"
-        }
-    }
 
     # --- TAMPILAN ANTARMUKA ---
     pilihan_alat = st.selectbox("Cari Peralatan Uji:", ["Pilih Alat..."] + list(db_ik.keys()))
