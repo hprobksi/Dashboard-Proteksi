@@ -108,7 +108,8 @@ elif st.session_state.halaman == 'test_plug':
                         {"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"},
                         {"PIN": "13, 14, 15", "FUNGSI": "PT Tegangan", "AKSI": "Normal"},
                         {"PIN": "21, 22", "FUNGSI": "Trip PMT", "AKSI": "Isolasi"}
-                    ]
+                    ],
+                    "Catatan": "Perhatikan polaritas CT. Pastikan pin trip PMT diisolasi terlebih dahulu sebelum menginjeksi arus."
                 }
             },
             "Bay Cikarang Listrindo 1": {
@@ -274,11 +275,32 @@ elif st.session_state.halaman == 'test_plug':
         st.markdown(f"#### 🏷️ {data['Merk']} {data['Tipe']}")
         st.write(f"**No Seri:** `{data['No Seri']}`")
         
+        # --- MENAMPILKAN CATATAN BAWAAN ---
+        if "Catatan Bawaan" in data and data["Catatan Bawaan"] != "":
+            st.warning(f"📌 **Catatan SOP:** {data['Catatan Bawaan']}")
+        
+        # --- MENAMPILKAN TABEL KONFIGURASI ---
         if len(data["Konfigurasi"]) > 0:
-            st.write("**Panduan Test Plug:**")
+            st.write("**Panduan Test Block:**")
             st.table(pd.DataFrame(data["Konfigurasi"]))
         else:
             st.info("⚠️ Tabel belum diinput.")
+            
+        st.divider()
+        
+        # --- FITUR CATATAN TAMBAHAN (INPUT TEKNISI) ---
+        st.write("### 📝 Catatan Aktual Lapangan")
+        catatan_tambahan = st.text_area(
+            "Tambahkan temuan atau anomali saat pengujian (Opsional):", 
+            placeholder="Ketik catatan di sini..."
+        )
+        
+        # Tombol aksi (Contoh jika ingin dikembangkan nanti)
+        if st.button("💾 Simpan Catatan Tambahan", type="secondary"):
+            if catatan_tambahan != "":
+                st.success("✅ Catatan berhasil direkam sementara di sesi ini!")
+            else:
+                st.error("⚠️ Catatan masih kosong.")
 
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
