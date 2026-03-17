@@ -506,12 +506,14 @@ elif st.session_state.halaman == 'catatan':
                     'ttd_kiri': '', 'ttd_tengah': '', 'ttd_kanan': '', 'foto_lampiran': ''
                 }
                 
-                # Fungsi cerdas untuk menyisipkan TTD berdasarkan nama
+               # Fungsi cerdas untuk menyisipkan TTD berdasarkan nama
                 def sisipkan_ttd(nama_pejabat):
                     if nama_pejabat in db_ttd and db_ttd[nama_pejabat] != "":
                         file_gambar = db_ttd[nama_pejabat]
-                        if os.path.exists(file_gambar): # Cek apakah file ada di server GitHub
-                            return InlineImage(doc, file_gambar, width=Mm(30)) # Lebar TTD 3cm
+                        if os.path.exists(file_gambar): 
+                            # KUNCI RAHASIANYA DI SINI: Gunakan 'height' (Tinggi), bukan 'width'
+                            # Tinggi 15 mm (1.5 cm) adalah ukuran paling ideal dan aman untuk tabel Word
+                            return InlineImage(doc, file_gambar, height=Mm(15)) 
                     return '' # Kosongkan jika tidak ketemu gambar
 
                 # Eksekusi Stempel Tanda Tangan
