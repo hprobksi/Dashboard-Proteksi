@@ -414,7 +414,7 @@ elif st.session_state.halaman == 'catatan':
     db_kegiatan = {
         "Resetting AVR": "1. Melakukan pengecekan setting yang terpasang\n2. Melakukan Resetting Parameter AVR\n3. Melakukan pengecekan bersama setting pasca resetting\n4. Pengujian individu / fungsi unjuk kerja\n5. Dokumentasi",
         "Remote Riding": "1. Persiapan koneksi VPN ke gateway / server\n2. Login ke relay target via remote akses\n3. Unduh data event dan disturbance record\n4. Analisa hasil unduhan record gangguan\n5. Dokumentasi",
-        "Resetting Relay": "1.	Melakukan pengecekan setting yang terpasang\n2.	Melakukan Resetting Parameter Relay \n3.	Melakukan Pengecekan bersama setting yang terpasang setelah resetting\n4. Melakukan pengujian individu relay pasca resetting\n5. Melakukan pengujian fungsi unjuk kerja relay pasca resetting\n6. Dokumentasi",
+        "Resetting Relay": "1. Melakukan pengecekan setting yang terpasang\n2. Melakukan Resetting Parameter Relay \n3. Melakukan Pengecekan bersama setting yang terpasang setelah resetting\n4. Melakukan pengujian individu relay pasca resetting\n5. Melakukan pengujian fungsi unjuk kerja relay pasca resetting\n6. Dokumentasi",
         "Modifikasi Alarm & Trip Bucholz": "1. Pemeriksaan kesesuaian rangkaian eksisting dengan wiring diagram\n2. Melakukan modifikasi rangkaian trip dan alarm relay bucholz\n3. Melakukan pengujian rangkaian baru\n4. Mencatat dan monitor indikasi yang muncul pada saat uji fungsi",
         "Lainnya (Ketik Manual)": ""
     }
