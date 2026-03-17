@@ -583,38 +583,39 @@ elif st.session_state.halaman == 'ik':
     st.subheader("📖 Buku Saku Instruksi Kerja (IK)")
     st.write("Pilih alat uji atau jenis pekerjaan untuk melihat SOP dan langkah kerjanya.")
 
-    # --- DATABASE INSTRUKSI KERJA ---
+   # --- DATABASE INSTRUKSI KERJA ---
     # Anda bisa menambahkan alat uji baru di dalam kurung kurawal ini
-    db_ik = {"Megger TORKEL 900-Series (Discharge Test)": {
-            "Fungsi": "Alat ukur untuk menguji kapasitas baterai (discharge test) di gardu induk menggunakan beban arus konstan, daya konstan, atau resistansi konstan[cite: 1958].",
+    db_ik = {
+        "Megger TORKEL 900-Series (Discharge Test)": {
+            "Fungsi": "Alat ukur untuk menguji kapasitas baterai (discharge test) di gardu induk menggunakan beban arus konstan, daya konstan, atau resistansi konstan.",
             "Persiapan": [
-                "Pastikan sirkulasi udara di ruang baterai sangat baik, karena proses pengujian (discharge) dapat menghasilkan gas hidrogen dan memicu ledakan jika ada percikan[cite: 2020].",
-                "Pastikan jarak bebas di sekitar TORKEL minimal 1.5 meter agar sirkulasi udara kipas pendingin tidak terhalang (jangan letakkan alat saling berdempetan)[cite: 2040, 2041].",
-                "Hubungkan TORKEL ke sumber listrik AC (mains) dan nyalakan saklar daya alat[cite: 2500]."
+                "Pastikan sirkulasi udara di ruang baterai sangat baik, karena proses pengujian (discharge) dapat menghasilkan gas hidrogen dan memicu ledakan jika ada percikan.",
+                "Pastikan jarak bebas di sekitar TORKEL minimal 1.5 meter agar sirkulasi udara kipas pendingin tidak terhalang (jangan letakkan alat saling berdempetan).",
+                "Hubungkan TORKEL ke sumber listrik AC (mains) dan nyalakan saklar daya alat."
             ],
             "Langkah Kerja": [
                 {
-                    "teks": "Pasang kabel arus utama dengan urutan yang benar: Pasang kabel negatif (-) dari TORKEL ke baterai, kemudian pasang kabel positif (+) ke baterai lalu ke terminal TORKEL[cite: 2524, 2525, 2526, 2527].",
-                    "gambar": "ik_torkel_kabel.jpg" # Ganti dengan nama foto Anda di GitHub (opsional)
+                    "teks": "Pasang kabel arus utama dengan urutan yang benar: Pasang kabel negatif (-) dari TORKEL ke baterai, kemudian pasang kabel positif (+) ke baterai lalu ke terminal TORKEL.",
+                    "gambar": "ik_torkel_kabel.jpg" 
                 },
                 {
-                    "teks": "Pasang kabel kecil 'Voltage Sense' langsung ke kutub baterai (jika kabel arus utama cukup panjang). Ini sangat disarankan agar pembacaan tegangan drop di layar lebih akurat[cite: 2506, 2507].",
+                    "teks": "Pasang kabel kecil 'Voltage Sense' langsung ke kutub baterai (jika kabel arus utama cukup panjang). Ini sangat disarankan agar pembacaan tegangan drop di layar lebih akurat.",
                     "gambar": None
                 },
                 {
-                    "teks": "Pada layar sentuh, pilih menu 'TEST', tekan 'Test Method' (pilih 'Constant I' untuk arus konstan), dan masukkan nilai arus pengujian[cite: 2546, 2547].",
-                    "gambar": "ik_torkel_menu.jpg" # Ganti dengan nama foto Anda di GitHub (opsional)
+                    "teks": "Pada layar sentuh, pilih menu 'TEST', tekan 'Test Method' (pilih 'Constant I' untuk arus konstan), dan masukkan nilai arus pengujian.",
+                    "gambar": "ik_torkel_menu.jpg" 
                 },
                 {
-                    "teks": "SANGAT PENTING: Aktifkan batas 'Warning' dan 'Stop Limits' untuk melindungi baterai. Atur batas tegangan bawah (Cut-off voltage), batas waktu maksimum, atau batas kapasitas Ah tercapai[cite: 2210, 2211, 2212, 2213].",
+                    "teks": "SANGAT PENTING: Aktifkan batas 'Warning' dan 'Stop Limits' untuk melindungi baterai. Atur batas tegangan bawah (Cut-off voltage), batas waktu maksimum, atau batas kapasitas Ah tercapai.",
                     "gambar": None
                 },
                 {
-                    "teks": "Tunggu hingga tulisan 'Connected ready' muncul di layar informasi bawah, kemudian tekan tombol START (▶) berwarna hijau untuk memulai pengujian[cite: 2552, 2553].",
+                    "teks": "Tunggu hingga tulisan 'Connected ready' muncul di layar informasi bawah, kemudian tekan tombol START (▶) berwarna hijau untuk memulai pengujian.",
                     "gambar": None
                 },
                 {
-                    "teks": "Setelah pengujian selesai dan alat di-STOP, lepaskan kabel dengan urutan kebalikan dari saat memasang[cite: 2563, 2567]. Peringatan: JANGAN PERNAH melepas capit kabel saat pengujian masih berjalan karena akan menimbulkan bunga api[cite: 2561]!",
+                    "teks": "Setelah pengujian selesai dan alat di-STOP, lepaskan kabel dengan urutan kebalikan dari saat memasang. Peringatan: JANGAN PERNAH melepas capit kabel saat pengujian masih berjalan karena akan menimbulkan bunga api!",
                     "gambar": None
                 }
             ],
@@ -622,8 +623,8 @@ elif st.session_state.halaman == 'ik':
 **💡 Catatan Pengalaman Lapangan:**
 *(Silakan hapus teks ini dan ketikkan pengalaman Mas Riki di sini. Misalnya: "Perhatikan saat memasang capit buaya ke kepala baterai, pastikan tidak goyang karena arus besar bisa membuat terminal panas/meleleh", atau tips lainnya)*
 """
+        }
     }
-        },
 
     # --- TAMPILAN ANTARMUKA ---
     pilihan_alat = st.selectbox("Cari Peralatan Uji:", ["Pilih Alat..."] + list(db_ik.keys()))
