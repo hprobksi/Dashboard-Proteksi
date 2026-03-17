@@ -626,26 +626,41 @@ elif st.session_state.halaman == 'ik':
         }
     }
 
-    # --- TAMPILAN ANTARMUKA ---
+   # --- TAMPILAN ANTARMUKA ---
     pilihan_alat = st.selectbox("Cari Peralatan Uji:", ["Pilih Alat..."] + list(db_ik.keys()))
 
     if pilihan_alat != "Pilih Alat...":
         data_ik = db_ik[pilihan_alat]
-        
         st.divider()
         st.markdown(f"### 🛠️ {pilihan_alat}")
         st.info(f"**Fungsi Utama:** {data_ik['Fungsi']}")
 
-        st.write("#### 📦 Persiapan")
-        for item in data_ik['Persiapan']:
-            st.write(f"- {item}")
+        with st.expander("📦 Persiapan", expanded=False):
+            for item in data_ik['Persiapan']:
+                st.write(f"- {item}")
 
-        st.write("#### 📋 Langkah Kerja")
-        for i, langkah in enumerate(data_ik['Langkah Kerja']):
-            # i+1 digunakan agar penomoran otomatis berurut 1, 2, 3, dst
-            st.write(f"**{i+1}.** {langkah}")
+        st.write("#### 📋 Langkah Kerja & Panduan Visual")
+        # Looping pintar: Bisa baca format lama (teks) maupun format baru (teks+gambar)
+        for i, item_langkah in enumerate(data_ik['Langkah Kerja']):
+            if isinstance(item_langkah, dict):
+                # Jika pakai format baru (ada gambar)
+                st.write(f"**{i+1}.** {item_langkah['teks']}")
+                # Tampilkan gambar jika file-nya ada di GitHub
+                if item_langkah.get('gambar') and os.path.exists(item_langkah['gambar']):
+                    st.image(item_langkah['gambar'], use_container_width=True)
+            else:
+                # Jika pakai format lama (teks biasa)
+                st.write(f"**{i+1}.** {item_langkah}")
 
-        st.warning(data_ik['Perhatian'])
+        st.write("---")
+        
+        # Tampilkan Perhatian (jika ada di database lama)
+        if "Perhatian" in data_ik and data_ik["Perhatian"] != "":
+            st.warning(data_ik['Perhatian'])
+            
+        # Tampilkan Catatan Pengalaman (jika ada di database baru)
+        if "Catatan Pengalaman" in data_ik and data_ik["Catatan Pengalaman"] != "":
+            st.success(data_ik['Catatan Pengalaman'])
 # HALAMAN 5: SETTINGS
 # ==========================================
 elif st.session_state.halaman == 'setting':
