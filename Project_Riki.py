@@ -103,7 +103,7 @@ elif st.session_state.halaman == 'test_plug':
         "GI Cikarang": {
             "Bay Kopel": {
                 "Relay OCGF": {
-                    "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
+                    "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "36881926/10/24",
                     "Konfigurasi": [
                         {"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"},
                         {"PIN": "13, 14, 15", "FUNGSI": "PT Tegangan", "AKSI": "Normal"},
@@ -119,17 +119,17 @@ elif st.session_state.halaman == 'test_plug':
             },
             "Bay Fajar 1": {
                 "Relay Distance": {
-                    "Merk": "Micom", "Tipe": "P546", "No Seri": "BLM",
+                    "Merk": "Micom", "Tipe": "P546", "No Seri": "34955418/12/19",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF": {
-                    "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "BLM",
+                    "Merk": "GE Multilin", "Tipe": "P14D", "No Seri": "36876504/10/24",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 }
             },
              "Bay Fajar 2": {
                 "Relay Distance": {
-                    "Merk": "Micom", "Tipe": "P546", "No Seri": "BLM",
+                    "Merk": "Micom", "Tipe": "P546", "No Seri": "34955417/12/19",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF": {
@@ -139,7 +139,7 @@ elif st.session_state.halaman == 'test_plug':
             },
              "Bay Jababeka 1": {
                 "Relay LCD": {
-                    "Merk": "NR", "Tipe": "PCS 931", "No Seri": "BLM",
+                    "Merk": "NR", "Tipe": "PCS 931", "No Seri": "NRJB20155116B0250",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF": {
@@ -149,7 +149,7 @@ elif st.session_state.halaman == 'test_plug':
             },
             "Bay Jababeka 2": {
                 "Relay LCD": {
-                    "Merk": "SIFANG", "Tipe": "CSC 103", "No Seri": "BLM",
+                    "Merk": "SIFANG", "Tipe": "CSC 103", "No Seri": "SFJB400004448417000055",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF": {
@@ -159,7 +159,7 @@ elif st.session_state.halaman == 'test_plug':
             },
               "Bay Rajapaksi 1": {
                 "Relay LCD": {
-                    "Merk": "MICOM", "Tipe": "P545", "No Seri": "BLM",
+                    "Merk": "MICOM", "Tipe": "P545", "No Seri": "34486823/06/18",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF": {
@@ -169,7 +169,7 @@ elif st.session_state.halaman == 'test_plug':
             },
              "Bay Rajapaksi 2": {
                 "Relay LCD": {
-                    "Merk": "MICOM", "Tipe": "P545", "No Seri": "BLM",
+                    "Merk": "MICOM", "Tipe": "P545", "No Seri": "33339701/06/15",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF": {
@@ -179,7 +179,7 @@ elif st.session_state.halaman == 'test_plug':
             },
               "Bay Trafo 1": {
                 "Relay DIFF": {
-                    "Merk": "ABB", "Tipe": "RET650", "No Seri": "BLM",
+                    "Merk": "ABB", "Tipe": "RET650", "No Seri": "T1645034",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF HV + SBEF": {
@@ -199,7 +199,7 @@ elif st.session_state.halaman == 'test_plug':
             },
             "Bay Trafo 3": {
                 "Relay DIFF": {
-                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "36197644/09/22",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF HV": {
@@ -211,13 +211,13 @@ elif st.session_state.halaman == 'test_plug':
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                   },
                 "Relay SBEF": {
-                    "Merk": "MICOM", "Tipe": "P14D", "No Seri": "BLM",
+                    "Merk": "MICOM", "Tipe": "P14D", "No Seri": "34954384/12/19",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                   }
             },
             "Bay Trafo 4": {
                 "Relay DIFF": {
-                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "36197645/09/22",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                 },
                 "Relay OCGF HV": {
@@ -229,7 +229,7 @@ elif st.session_state.halaman == 'test_plug':
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                   },
                 "Relay SBEF": {
-                    "Merk": "MICOM", "Tipe": "P14D", "No Seri": "BLM",
+                    "Merk": "MICOM", "Tipe": "P14D", "No Seri": "34954380/12/19",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}]
                   }
             },
