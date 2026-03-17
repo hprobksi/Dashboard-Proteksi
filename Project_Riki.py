@@ -82,14 +82,15 @@ if st.session_state.halaman == 'menu':
     st.write("Silakan pilih modul Proteksi:")
     st.divider()
 
-    kolom1, kolom2 = st.columns(2)
+  kolom1, kolom2 = st.columns(2)
     with kolom1:
         st.button("🔌\n\nTest Block", type="primary", use_container_width=True, on_click=pindah_halaman, args=('test_plug',))
         st.button("📝\n\nBA Pekerjaan", type="primary", use_container_width=True, on_click=pindah_halaman, args=('catatan',))
+        # ---> TAMBAHKAN TOMBOL BARU INI <---
+        st.button("📖\n\nInstruksi Kerja", type="primary", use_container_width=True, on_click=pindah_halaman, args=('ik',))
     with kolom2:
         st.button("🗺️\n\nWiring", type="primary", use_container_width=True, on_click=pindah_halaman, args=('wiring',))
         st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
-
 # ==========================================
 # HALAMAN 2: TEST PLUG
 # ==========================================
@@ -573,6 +574,73 @@ elif st.session_state.halaman == 'catatan':
             except Exception as e:
                 st.error(f"Error: Pastikan template_ba.docx & gambar TTD sudah di-upload ke GitHub. Detail: {e}")
 # ==========================================
+# ==========================================
+# HALAMAN 5: INSTRUKSI KERJA (IK)
+# ==========================================
+elif st.session_state.halaman == 'ik':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
+    st.subheader("📖 Buku Saku Instruksi Kerja (IK)")
+    st.write("Pilih alat uji atau jenis pekerjaan untuk melihat SOP dan langkah kerjanya.")
+
+    # --- DATABASE INSTRUKSI KERJA ---
+    # Anda bisa menambahkan alat uji baru di dalam kurung kurawal ini
+    db_ik = {
+        "Alat Uji Kapasitas Baterai (TORKEL)": {
+            "Fungsi": "Alat ukur untuk menguji kapasitas (discharge test) baterai 110V DC di Gardu Induk.",
+            "Persiapan": [
+                "Pastikan baterai dalam kondisi full charge sebelum pengujian.",
+                "Siapkan APD lengkap (Sarung tangan karet, kacamata safety).",
+                "Siapkan kabel konektor Torkel dan beban tambahan (TXL) jika kapasitas baterai besar."
+            ],
+            "Langkah Kerja": [
+                "Hubungkan kabel power Torkel ke sumber AC 220V yang aman.",
+                "Hubungkan kabel sensing (merah/hitam) ke kutub (+) dan (-) baterai. Pastikan capit buaya merekat kuat.",
+                "Hubungkan kabel load/beban utama ke kutub (+) dan (-) baterai.",
+                "Nyalakan Torkel, masuk ke menu konfigurasi.",
+                "Set parameter: Tegangan baterai (110V), Arus discharge sesuai kapasitas baterai, dan Cut-off voltage (misal 90V).",
+                "Tekan tombol START untuk memulai pengujian.",
+                "Selama proses, lakukan pengukuran tegangan per sel (cell test) menggunakan multimeter setiap 1 jam."
+            ],
+            "Perhatian": "⚠️ Pastikan polaritas kabel (+) dan (-) TIDAK TERBALIK. Ruang baterai harus memiliki ventilasi yang baik karena proses discharge menghasilkan gas/panas."
+        },
+        "Alat Uji Tahanan Kontak (Micro Ohmmeter)": {
+            "Fungsi": "Alat untuk mengukur nilai tahanan kontak (Contact Resistance) pada PMT atau PMS.",
+            "Persiapan": [
+                "Pastikan PMT/PMS dalam kondisi TERTUTUP (Close).",
+                "Pastikan peralatan sudah BEBAS TEGANGAN dan kabel grounding lokal terpasang di salah satu sisi."
+            ],
+            "Langkah Kerja": [
+                "Hubungkan kabel injeksi arus (Current/C) merah dan hitam ke terminal atas dan bawah PMT.",
+                "Hubungkan kabel pengukur tegangan (Voltage/P) merah dan hitam di bagian DALAM dekat titik kontak PMT.",
+                "Nyalakan alat dan pilih arus injeksi yang sesuai (Standar biasanya 100A atau 200A).",
+                "Tekan tombol START / TEST untuk menginjeksi arus.",
+                "Catat nilai tahanan kontak yang muncul di layar (dalam satuan mikro-Ohm / μΩ)."
+            ],
+            "Perhatian": "⚠️ JANGAN PERNAH melepas capit kabel saat alat sedang melakukan injeksi arus tinggi!"
+        }
+    }
+
+    # --- TAMPILAN ANTARMUKA ---
+    pilihan_alat = st.selectbox("Cari Peralatan Uji:", ["Pilih Alat..."] + list(db_ik.keys()))
+
+    if pilihan_alat != "Pilih Alat...":
+        data_ik = db_ik[pilihan_alat]
+        
+        st.divider()
+        st.markdown(f"### 🛠️ {pilihan_alat}")
+        st.info(f"**Fungsi Utama:** {data_ik['Fungsi']}")
+
+        st.write("#### 📦 Persiapan")
+        for item in data_ik['Persiapan']:
+            st.write(f"- {item}")
+
+        st.write("#### 📋 Langkah Kerja")
+        for i, langkah in enumerate(data_ik['Langkah Kerja']):
+            # i+1 digunakan agar penomoran otomatis berurut 1, 2, 3, dst
+            st.write(f"**{i+1}.** {langkah}")
+
+        st.warning(data_ik['Perhatian'])
 # HALAMAN 5: SETTINGS
 # ==========================================
 elif st.session_state.halaman == 'setting':
