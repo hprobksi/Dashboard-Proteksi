@@ -585,7 +585,7 @@ elif st.session_state.halaman == 'ik':
 
     # --- DATABASE INSTRUKSI KERJA ---
     # Anda bisa menambahkan alat uji baru di dalam kurung kurawal ini
-    db_ik = "Megger TORKEL 900-Series (Discharge Test)": {
+    db_ik = {"Megger TORKEL 900-Series (Discharge Test)": {
             "Fungsi": "Alat ukur untuk menguji kapasitas baterai (discharge test) di gardu induk menggunakan beban arus konstan, daya konstan, atau resistansi konstan[cite: 1958].",
             "Persiapan": [
                 "Pastikan sirkulasi udara di ruang baterai sangat baik, karena proses pengujian (discharge) dapat menghasilkan gas hidrogen dan memicu ledakan jika ada percikan[cite: 2020].",
@@ -622,6 +622,7 @@ elif st.session_state.halaman == 'ik':
 **💡 Catatan Pengalaman Lapangan:**
 *(Silakan hapus teks ini dan ketikkan pengalaman Mas Riki di sini. Misalnya: "Perhatikan saat memasang capit buaya ke kepala baterai, pastikan tidak goyang karena arus besar bisa membuat terminal panas/meleleh", atau tips lainnya)*
 """
+    }
         },
 
     # --- TAMPILAN ANTARMUKA ---
