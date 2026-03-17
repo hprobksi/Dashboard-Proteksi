@@ -401,9 +401,19 @@ elif st.session_state.halaman == 'catatan':
     db_ttd = {
         "Kosongkan (Tanda Tangan Basah)": "",
         "M JAENAL M": "ttd_jaenal.png",
-        "ORRY VERNANDA": "ttd_orry.png",
+        "I Putu Surya A S": "ttd_putu.png",
+        "Triawan A P N": "ttd_triawan.png",
+        "Fajar Kurniawan": "ttd_fajark.png",
+        "Hasanudin": "ttd_hasanudin.png",
+        "RD. Jaya Kusuma": "ttd_raden.png",
+        "AL Bastomy": "ttd_tomy.png",
+        "Saepul Rohmat": "ttd_saepul.png",
+        "Khahfi M M": "ttd_khahfi.png",
         "ERVAN JAGI M W": "ttd_ervan.png",
-        "RIKI H": "ttd_riki.png"
+        "Fajar R D S": "ttd_fajar.png",
+        "Fathoni Diananta": "ttd_fatoni.png",
+        "ORRY VERNANDA": "ttd_orry.png",
+        "RIKI H": "ttd_riki.png",
     }
 
     # --- FORM INPUT DATA ---
