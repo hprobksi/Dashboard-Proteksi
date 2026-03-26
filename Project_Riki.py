@@ -5,7 +5,8 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 import streamlit as st
 import pandas as pd
-from fpdf import FPDF
+from docxtpl import DocxTemplate, InlineImage
+from docx.shared import Mm
 import tempfile
 import os
 
