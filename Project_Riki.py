@@ -753,19 +753,57 @@ elif st.session_state.halaman == 'cl_pht':
         with k3:
             in_nama_kanan = st.selectbox("Manager ULTG", list(db_ttd.keys()), index=2)
 
-    # 2. CHECKLIST (1 - 29)
+# 2. CHECKLIST (1 - 29)
     cl_vals, cat_vals = {}, {}
     with st.expander("2. Form Checklist Pekerjaan", expanded=False):
         st.write("Pilih (✓) untuk selesai, (✗) jika ada masalah (wajib isi catatan).")
-        for i in range(1, 30):
+        
+        # Daftar teks pekerjaan yang diringkas agar mudah dibaca di layar HP
+        daftar_pekerjaan = [
+            "1. Pengukuran arus & tegangan (Sebelum)",
+            "2. Cek peralatan tidak bertegangan",
+            "3. Pasang LOTO & tagging",
+            "4. Pengukuran DC (Sebelum)",
+            "5. Blocking & dokumentasi inisiasi CBF",
+            "6. Amankan input analog ke defense scheme",
+            "7. Dokumentasi setting/logic awal",
+            "8. Dokumentasi terminal/wiring awal",
+            "9. Pastikan setting relay sesuai dokumen",
+            "10. Ukur kontinuitas sekunder CT",
+            "11. Uji individu relay",
+            "12. Uji fungsi trip/reclose",
+            "13. Uji fungsi no trip/starting",
+            "14. Kembalikan wiring/terminal awal",
+            "15. Cek kekencangan terminal wiring",
+            "16. Cek kondisi grounding (tidak double)",
+            "17. Kembalikan setting/logic awal",
+            "18. Ukur kontinuitas sekunder CT (Penormalan)",
+            "19. Pastikan testplug terlepas",
+            "20. Switch kontrol PMT ke Remote",
+            "21. Kembalikan input analog defense scheme",
+            "22. Kembalikan inisiasi CBF",
+            "23. Ukur DC (Setelah)",
+            "24. Ukur phasor arus & tegangan (Setelah)",
+            "25. Cadangan / Tambahan 1",
+            "26. Cadangan / Tambahan 2",
+            "27. Cadangan / Tambahan 3",
+            "28. Cadangan / Tambahan 4",
+            "29. Cadangan / Tambahan 5"
+        ]
+
+        # Looping untuk memunculkan Teks + Tombol + Catatan
+        for i, teks in enumerate(daftar_pekerjaan):
+            nomor = i + 1
+            st.markdown(f"**{teks}**") # <--- INI YANG MEMUNCULKAN TEKSNYA
             col_cek, col_cat = st.columns([1, 2])
             with col_cek:
-                cl_vals[i] = st.radio(f"Item No. {i}", ["✓", "✗", "-"], horizontal=True, key=f"cl_{i}", label_visibility="collapsed")
+                cl_vals[nomor] = st.radio(f"Item No. {nomor}", ["✓", "✗", "-"], horizontal=True, key=f"cl_{nomor}", label_visibility="collapsed")
             with col_cat:
-                if cl_vals[i] == "✗":
-                    cat_vals[i] = st.text_input(f"Catatan {i}", placeholder="⚠️ Wajib isi alasan...", key=f"cat_{i}")
+                if cl_vals[nomor] == "✗":
+                    cat_vals[nomor] = st.text_input(f"Catatan {nomor}", placeholder="⚠️ Wajib isi alasan...", key=f"cat_{nomor}")
                 else:
-                    cat_vals[i] = st.text_input(f"Catatan {i}", placeholder="Opsional...", key=f"cat_{i}", label_visibility="collapsed")
+                    cat_vals[nomor] = st.text_input(f"Catatan {nomor}", placeholder="Opsional...", key=f"cat_{nomor}", label_visibility="collapsed")
+            st.write("") # Memberi sedikit jarak antar item
 
     # 3. KONTINUITAS CT
     data_kontinuitas = {}
