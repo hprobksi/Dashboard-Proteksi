@@ -663,6 +663,240 @@ elif st.session_state.halaman == 'ik':
         # Tampilkan Catatan Pengalaman (jika ada di database baru)
         if "Catatan Pengalaman" in data_ik and data_ik["Catatan Pengalaman"] != "":
             st.success(data_ik['Catatan Pengalaman'])
+
+# ==========================================
+# HALAMAN 6: FORM CHECKLIST PHT
+# ==========================================
+elif st.session_state.halaman == 'cl_pht':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
+    st.subheader("📋 Generator Form Checklist Penghantar")
+    st.write("Isi data di bawah ini, kosongkan (-) jika tidak ada nilai ukur.")
+
+    # --- DATABASE TANDA TANGAN ---
+    db_ttd = {
+        "Kosongkan (Tanda Tangan Basah)": "",
+        "M Jaenal M": "ttd_jaenal.png",
+        "I Putu Surya A S": "ttd_putu.png",
+        "Triawan A P N": "ttd_triawan.png",
+        "Fajar Kurniawan": "ttd_fajark.png",
+        "Hasanudin": "ttd_hasanudin.png",
+        "RD. Jaya Kusuma": "ttd_raden.png",
+        "AL Bastomy": "ttd_tomy.png",
+        "Saepul Rohmat": "ttd_saepul.png",
+        "Khahfi M M": "ttd_khahfi.png",
+        "Ervan Jagi M W": "ttd_ervan.png",
+        "Fajar R D S": "ttd_fajar.png",
+        "Fathoni Diananta": "ttd_fatoni.png",
+        "Riki H": "ttd_riki.png"
+    }
+
+    # --- FUNGSI PINTAR UNTUK MENGHEMAT KODE UI ---
+    def ui_ukur_fasa(prefix, fasa_list, ada_tegangan=True):
+        data = {}
+        for fasa in fasa_list:
+            c = st.columns(4 if ada_tegangan else 2)
+            data[f'{prefix}_i_{fasa}'] = c[0].text_input(f"I-{fasa.upper()} (A)", key=f"in_{prefix}_i_{fasa}")
+            data[f'{prefix}_i_{fasa}_sdt'] = c[1].text_input(f"∠ I-{fasa.upper()}", key=f"in_{prefix}_i_{fasa}_sdt")
+            if ada_tegangan:
+                data[f'{prefix}_v_{fasa}'] = c[2].text_input(f"V-{fasa.upper()} (kV)", key=f"in_{prefix}_v_{fasa}")
+                data[f'{prefix}_v_{fasa}_sdt'] = c[3].text_input(f"∠ V-{fasa.upper()}", key=f"in_{prefix}_v_{fasa}_sdt")
+        return data
+
+    def ui_ukur_diff(prefix):
+        data = {}
+        for f in ['r', 's', 't']:
+            c = st.columns(2)
+            data[f'idiff_{prefix}_{f}'] = c[0].text_input(f"Idiff {f.upper()}", key=f"in_idiff_{prefix}_{f}")
+            data[f'irest_{prefix}_{f}'] = c[1].text_input(f"Irest {f.upper()}", key=f"in_irest_{prefix}_{f}")
+        return data
+
+    def ui_kontinuitas(prefix):
+        data = {}
+        for f in ['r', 's', 't']:
+            st.caption(f"Fasa {f.upper()}")
+            c = st.columns(6)
+            data[f'{prefix}_tb1{f}'] = c[0].text_input("TB1", key=f"in_{prefix}_tb1{f}")
+            data[f'{prefix}_tb2{f}'] = c[1].text_input("TB2", key=f"in_{prefix}_tb2{f}")
+            data[f'{prefix}_tb3{f}'] = c[2].text_input("TB3", key=f"in_{prefix}_tb3{f}")
+            data[f'{prefix}_mpu{f}'] = c[3].text_input("MPU", key=f"in_{prefix}_mpu{f}")
+            data[f'{prefix}_bpu{f}'] = c[4].text_input("BPU", key=f"in_{prefix}_bpu{f}")
+            data[f'{prefix}_mtr{f}'] = c[5].text_input("MTR", key=f"in_{prefix}_mtr{f}")
+        return data
+
+    def ui_sistem_dc(prefix):
+        data = {}
+        c = st.columns(3)
+        data[f'pn_{prefix}'] = c[0].text_input("P-N (V)", key=f"in_pn_{prefix}")
+        data[f'pg_{prefix}'] = c[1].text_input("P-G (V)", key=f"in_pg_{prefix}")
+        data[f'ng_{prefix}'] = c[2].text_input("N-G (V)", key=f"in_ng_{prefix}")
+        return data
+
+    # 1. IDENTITAS
+    with st.expander("1. Identitas & Pengesahan", expanded=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            in_upt = st.text_input("UPT", value="BEKASI")
+            in_ultg = st.text_input("ULTG", value="BEKASI")
+            in_gi = st.text_input("GI / GITET", value="TAMBUN")
+        with c2:
+            in_bay = st.text_input("BAY", value="PENGHANTAR HANKOOK 2")
+            in_tgl = st.date_input("Tanggal Pekerjaan")
+            
+        st.divider()
+        st.write("**Pejabat Pengesah:**")
+        k1, k2, k3 = st.columns(3)
+        with k1:
+            in_nama_kiri = st.selectbox("Nama Pelaksana", list(db_ttd.keys()), index=1)
+        with k2:
+            in_nama_tengah = st.selectbox("Pengawas Pekerjaan", list(db_ttd.keys()), index=4)
+        with k3:
+            in_nama_kanan = st.selectbox("Manager ULTG", list(db_ttd.keys()), index=2)
+
+    # 2. CHECKLIST (1 - 29)
+    cl_vals, cat_vals = {}, {}
+    with st.expander("2. Form Checklist Pekerjaan", expanded=False):
+        st.write("Pilih (✓) untuk selesai, (✗) jika ada masalah (wajib isi catatan).")
+        for i in range(1, 30):
+            col_cek, col_cat = st.columns([1, 2])
+            with col_cek:
+                cl_vals[i] = st.radio(f"Item No. {i}", ["✓", "✗", "-"], horizontal=True, key=f"cl_{i}", label_visibility="collapsed")
+            with col_cat:
+                if cl_vals[i] == "✗":
+                    cat_vals[i] = st.text_input(f"Catatan {i}", placeholder="⚠️ Wajib isi alasan...", key=f"cat_{i}")
+                else:
+                    cat_vals[i] = st.text_input(f"Catatan {i}", placeholder="Opsional...", key=f"cat_{i}", label_visibility="collapsed")
+
+    # 3. KONTINUITAS CT
+    data_kontinuitas = {}
+    with st.expander("3. Nilai Kontinuitas CT", expanded=False):
+        st.write("**SEBELUM PEMELIHARAAN**")
+        data_kontinuitas.update(ui_kontinuitas("seb"))
+        st.divider()
+        st.write("**SESUDAH PEMELIHARAAN**")
+        data_kontinuitas.update(ui_kontinuitas("set"))
+
+    # 4. FUNGSI PROTEKSI
+    fungsi_vals = {}
+    with st.expander("4. Form Fungsi Proteksi Utama dll", expanded=False):
+        st.write("Tentukan status 20 Item Fungsi Proteksi.")
+        for i in range(1, 21):
+            fungsi_vals[i] = st.radio(f"Fungsi ke-{i}", ["ENABLE", "DISABLE", "-"], horizontal=True, key=f"fungsi_{i}")
+
+    # 5. PENGUKURAN
+    data_ukur = {}
+    with st.expander("5. Pengukuran Arus, Tegangan, Daya", expanded=False):
+        tab1, tab2, tab3 = st.tabs(["🔴 Utama", "🟡 Cadangan", "🟢 Metering"])
+        with tab1:
+            st.write("**SEBELUM**")
+            data_ukur.update(ui_ukur_fasa('ut_seb', ['r', 's', 't', 'n'], True))
+            st.divider()
+            st.write("**SESUDAH**")
+            data_ukur.update(ui_ukur_fasa('ut_ses', ['r', 's', 't', 'n'], True))
+        with tab2:
+            st.write("**SEBELUM**")
+            data_ukur.update(ui_ukur_fasa('cd_seb', ['r', 's', 't', 'n'], False))
+            st.divider()
+            st.write("**SESUDAH**")
+            data_ukur.update(ui_ukur_fasa('cd_ses', ['r', 's', 't', 'n'], False))
+        with tab3:
+            st.write("**SEBELUM**")
+            data_ukur.update(ui_ukur_fasa('mt_seb', ['r', 's', 't', 'n'], True))
+            st.divider()
+            st.write("**SESUDAH**")
+            data_ukur.update(ui_ukur_fasa('mt_ses', ['r', 's', 't', 'n'], True))
+
+    # 6. SISTEM DC
+    data_dc = {}
+    with st.expander("6. Sistem DC & Dokumentasi", expanded=False):
+        st.write("**SEBELUM PEMELIHARAAN**")
+        data_dc.update(ui_sistem_dc("seb_dc1"))
+        data_dc.update(ui_sistem_dc("seb_dc2"))
+        st.divider()
+        st.write("**SESUDAH PEMELIHARAAN**")
+        data_dc.update(ui_sistem_dc("ses_dc1"))
+        data_dc.update(ui_sistem_dc("ses_dc2"))
+        st.divider()
+        in_foto_cl = st.file_uploader("Upload Capture Metering (Opsional)", type=["jpg", "jpeg", "png"], key="foto_cl")
+
+    st.divider()
+
+    # --- TOMBOL GENERATE DOKUMEN CHECKLIST ---
+    if st.button("📄 Rakit Dokumen Checklist PHT", type="primary", use_container_width=True):
+        with st.spinner("Menyusun ratusan data & tanda tangan... ⏳"):
+            try:
+                doc = DocxTemplate("template_cl_pht.docx")
+                bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+                tgl_format = f"{in_tgl.day} {bulan_indo[in_tgl.month - 1]} {in_tgl.year}"
+                
+                # Context Utama
+                context = {
+                    'upt': in_upt, 'ultg': in_ultg, 'gi': in_gi, 'bay': in_bay, 'tgl': tgl_format,
+                    'nama_pelaksana': f"( {in_nama_kiri} )" if in_nama_kiri and in_nama_kiri != "Kosongkan (Tanda Tangan Basah)" else "",
+                    'nama_pengawas': f"( {in_nama_tengah} )" if in_nama_tengah and in_nama_tengah != "Kosongkan (Tanda Tangan Basah)" else "",
+                    'nama_manager': f"( {in_nama_kanan} )" if in_nama_kanan and in_nama_kanan != "Kosongkan (Tanda Tangan Basah)" else "",
+                    'ttd_pelaksana': '', 'ttd_pengawas': '', 'ttd_manager': '', 'foto_lampiran': ''
+                }
+                
+                def sisipkan_ttd(nama_pejabat):
+                    if nama_pejabat in db_ttd and db_ttd[nama_pejabat] != "":
+                        file_gambar = db_ttd[nama_pejabat]
+                        if os.path.exists(file_gambar): return InlineImage(doc, file_gambar, height=Mm(15))
+                    return ''
+                
+                context['ttd_pelaksana'] = sisipkan_ttd(in_nama_kiri)
+                context['ttd_pengawas'] = sisipkan_ttd(in_nama_tengah)
+                context['ttd_manager'] = sisipkan_ttd(in_nama_kanan)
+
+                # Looping Otomatis memasukkan 29 item Checklist & Catatan ke Context
+                for i in range(1, 30):
+                    context[f'cl_{i}'] = cl_vals[i]
+                    context[f'cat_{i}'] = cat_vals[i]
+                
+                # Looping Otomatis memasukkan 20 item Fungsi Enable/Disable
+                for i in range(1, 21):
+                    if fungsi_vals[i] == "ENABLE":
+                        context[f'en_{i}'] = '✓'
+                        context[f'dis_{i}'] = ''
+                    elif fungsi_vals[i] == "DISABLE":
+                        context[f'en_{i}'] = ''
+                        context[f'dis_{i}'] = '✓'
+                    else:
+                        context[f'en_{i}'] = ''
+                        context[f'dis_{i}'] = ''
+
+                # Memasukkan semua data tabel yang di-generate otomatis
+                context.update(data_kontinuitas)
+                context.update(data_ukur)
+                context.update(data_dc)
+
+                # Lampiran Foto
+                if in_foto_cl:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_foto:
+                        tmp_foto.write(in_foto_cl.getvalue())
+                        tmp_path = tmp_foto.name
+                    context['foto_lampiran'] = InlineImage(doc, tmp_path, width=Mm(150))
+
+                doc.render(context)
+                file_output = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
+                doc.save(file_output.name)
+                
+                with open(file_output.name, "rb") as f:
+                    docx_bytes = f.read()
+                
+                os.remove(file_output.name)
+                if in_foto_cl: os.remove(tmp_path)
+
+                st.success("✅ Form Checklist PHT berhasil dirakit!")
+                st.download_button(
+                    label="⬇️ Download Form Checklist Siap Cetak (Word .docx)",
+                    data=docx_bytes,
+                    file_name=f"CL_{in_gi}_{in_bay.replace(' ', '_')}.docx",
+                    mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    type="primary"
+                )
+            except Exception as e:
+                st.error(f"Error: {e}")
 # HALAMAN 5: SETTINGS
 # ==========================================
 elif st.session_state.halaman == 'setting':
