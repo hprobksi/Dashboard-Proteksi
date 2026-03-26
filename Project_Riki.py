@@ -826,20 +826,7 @@ elif st.session_state.halaman == 'cl_pht':
         with tab_ses:
             buat_baris_checklist(ses_list)
 
-        # Looping untuk memunculkan Teks + Tombol + Catatan
-        for i, teks in enumerate(daftar_pekerjaan):
-            nomor = i + 1
-            st.markdown(f"**{teks}**") # <--- INI YANG MEMUNCULKAN TEKSNYA
-            col_cek, col_cat = st.columns([1, 2])
-            with col_cek:
-                cl_vals[nomor] = st.radio(f"Item No. {nomor}", ["✓", "✗", "-"], horizontal=True, key=f"cl_{nomor}", label_visibility="collapsed")
-            with col_cat:
-                if cl_vals[nomor] == "✗":
-                    cat_vals[nomor] = st.text_input(f"Catatan {nomor}", placeholder="⚠️ Wajib isi alasan...", key=f"cat_{nomor}")
-                else:
-                    cat_vals[nomor] = st.text_input(f"Catatan {nomor}", placeholder="Opsional...", key=f"cat_{nomor}", label_visibility="collapsed")
-            st.write("") # Memberi sedikit jarak antar item
-
+       
     # 3. KONTINUITAS CT
     data_kontinuitas = {}
     with st.expander("3. Nilai Kontinuitas CT", expanded=False):
