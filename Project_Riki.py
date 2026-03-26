@@ -836,12 +836,45 @@ elif st.session_state.halaman == 'cl_pht':
         st.write("**SESUDAH PEMELIHARAAN**")
         data_kontinuitas.update(ui_kontinuitas("set"))
 
-    # 4. FUNGSI PROTEKSI
+   # 4. FUNGSI PROTEKSI
     fungsi_vals = {}
-    with st.expander("4. Form Fungsi Proteksi Utama dll", expanded=False):
-        st.write("Tentukan status 20 Item Fungsi Proteksi.")
-        for i in range(1, 21):
-            fungsi_vals[i] = st.radio(f"Fungsi ke-{i}", ["ENABLE", "DISABLE", "-"], horizontal=True, key=f"fungsi_{i}")
+    with st.expander("4. Form Fungsi Proteksi (Utama, Indikasi, Cadangan)", expanded=True):
+        st.write("Tentukan status 20 Item Fungsi Proteksi (Pilih ENABLE/DISABLE).")
+        
+        # Daftar 20 Fungsi Proteksi yang disesuaikan dengan Template Word
+        daftar_fungsi = [
+            "1. [UTAMA] RELAY HEALTHY / READY",
+            "2. [UTAMA] LINE CURRENT DIFF",
+            "3. [UTAMA] DISTANCE",
+            "4. [UTAMA] DIRECTIONAL EARTH FAULT",
+            "5. [UTAMA] AUTORECLOSE",
+            "6. [UTAMA] TOR / SOTF",
+            "7. [SINKRON] SETTING SINKRON (Main)",
+            "8. [SINKRON] a. Live Bus - Live Line",
+            "9. [SINKRON] b. Live Bus - Dead Line",
+            "10. [SINKRON] c. Dead Bus - Live Line",
+            "11. [SINKRON] d. Dead Bus - Dead Line",
+            "12. [INDIKASI] STATUS CB A",
+            "13. [INDIKASI] STATUS CB B",
+            "14. [INDIKASI] STATUS CB C",
+            "15. [INDIKASI] CB READY / HEALTHY / TROUBLE",
+            "16. [INDIKASI] STATUS AUTORECLOSE",
+            "17. [INDIKASI] COS / CARR. TROUBLE / COM FAIL",
+            "18. [CADANGAN] RELAY HEALTHY / READY",
+            "19. [CADANGAN] OVER CURRENT",
+            "20. [CADANGAN] EARTH FAULT"
+        ]
+
+        for i, teks_fungsi in enumerate(daftar_fungsi):
+            nomor = i + 1
+            # Tampilkan teks fungsi sebagai label judul radio button
+            fungsi_vals[nomor] = st.radio(
+                teks_fungsi, 
+                ["ENABLE", "DISABLE", "-"], 
+                horizontal=True, 
+                key=f"fungsi_{nomor}"
+            )
+            st.write("") # Sedikit jarak antar tombol
 
     # 5. PENGUKURAN
     data_ukur = {}
