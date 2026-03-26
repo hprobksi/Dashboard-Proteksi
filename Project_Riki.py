@@ -92,6 +92,7 @@ if st.session_state.halaman == 'menu':
     with kolom2:
         st.button("🗺️\n\nWiring", type="primary", use_container_width=True, on_click=pindah_halaman, args=('wiring',))
         st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
+        st.button("📋\n\nForm Har CL PHT", type="primary", use_container_width=True, on_click=pindah_halaman, args=('cl_pht',))
 # ==========================================
 # HALAMAN 2: TEST PLUG
 # ==========================================
