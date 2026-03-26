@@ -753,43 +753,78 @@ elif st.session_state.halaman == 'cl_pht':
         with k3:
             in_nama_kanan = st.selectbox("Manager ULTG", list(db_ttd.keys()), index=2)
 
-# 2. CHECKLIST (1 - 29)
+# 2. CHECKLIST (1 - 29) TIGA TAHAPAN
     cl_vals, cat_vals = {}, {}
-    with st.expander("2. Form Checklist Pekerjaan", expanded=False):
+    with st.expander("2. Form Checklist Pekerjaan", expanded=True):
         st.write("Pilih (✓) untuk selesai, (✗) jika ada masalah (wajib isi catatan).")
         
-        # Daftar teks pekerjaan yang diringkas agar mudah dibaca di layar HP
-        daftar_pekerjaan = [
-            "1. Pengukuran arus & tegangan (Sebelum)",
-            "2. Cek peralatan tidak bertegangan",
-            "3. Pasang LOTO & tagging",
-            "4. Pengukuran DC (Sebelum)",
-            "5. Blocking & dokumentasi inisiasi CBF",
-            "6. Amankan input analog ke defense scheme",
-            "7. Dokumentasi setting/logic awal",
-            "8. Dokumentasi terminal/wiring awal",
-            "9. Pastikan setting relay sesuai dokumen",
-            "10. Ukur kontinuitas sekunder CT",
-            "11. Uji individu relay",
-            "12. Uji fungsi trip/reclose",
-            "13. Uji fungsi no trip/starting",
-            "14. Kembalikan wiring/terminal awal",
-            "15. Cek kekencangan terminal wiring",
-            "16. Cek kondisi grounding (tidak double)",
-            "17. Kembalikan setting/logic awal",
-            "18. Ukur kontinuitas sekunder CT (Penormalan)",
-            "19. Pastikan testplug terlepas",
-            "20. Switch kontrol PMT ke Remote",
-            "21. Kembalikan input analog defense scheme",
-            "22. Kembalikan inisiasi CBF",
-            "23. Ukur DC (Setelah)",
-            "24. Ukur phasor arus & tegangan (Setelah)",
-            "25. Cadangan / Tambahan 1",
-            "26. Cadangan / Tambahan 2",
-            "27. Cadangan / Tambahan 3",
-            "28. Cadangan / Tambahan 4",
-            "29. Cadangan / Tambahan 5"
-        ]
+        # Membuat 3 Tab di layar aplikasi
+        tab_seb, tab_saat, tab_ses = st.tabs(["🟢 SEBELUM", "🟡 SAAT", "🔴 SESUDAH"])
+        
+        # --- DAFTAR PEKERJAAN SEBELUM (Item 1-8) ---
+        seb_list = {
+            1: "1. Pengukuran arus & tegangan (Sebelum)",
+            2: "2. Cek peralatan tidak bertegangan",
+            3: "3. Pasang LOTO & tagging",
+            4: "4. Pengukuran DC (Sebelum)",
+            5: "5. Blocking & dokumentasi inisiasi CBF",
+            6: "6. Amankan input analog ke defense scheme",
+            7: "7. Dokumentasi setting/logic awal",
+            8: "8. Dokumentasi terminal/wiring awal"
+        }
+        
+        # --- DAFTAR PEKERJAAN SAAT (Item 9-16) ---
+        saat_list = {
+            9: "1. Pastikan setting relay sesuai dokumen",
+            10: "2. Ukur kontinuitas sekunder CT",
+            11: "→ Hasil Ukur Kontinuitas Fasa R",
+            12: "→ Hasil Ukur Kontinuitas Fasa S",
+            13: "→ Hasil Ukur Kontinuitas Fasa T",
+            14: "3. Uji individu relay",
+            15: "4. Uji fungsi trip/reclose",
+            16: "5. Uji fungsi no trip/starting"
+        }
+        
+        # --- DAFTAR PEKERJAAN SESUDAH (Item 17-29) ---
+        ses_list = {
+            17: "1. Kembalikan wiring/terminal awal",
+            18: "2. Cek kekencangan terminal wiring",
+            19: "3. Cek kondisi grounding (tidak double)",
+            20: "4. Kembalikan setting/logic awal",
+            21: "5. Ukur kontinuitas sekunder CT (Penormalan)",
+            22: "→ Hasil Ukur Kontinuitas Penormalan",
+            23: "6. Pastikan testplug terlepas",
+            24: "7. Switch kontrol PMT ke Remote",
+            25: "8. Kembalikan input analog defense scheme",
+            26: "9. Mengembalikan blocking inisiasi (Part 1)",
+            27: "9. Mengembalikan blocking inisiasi (Part 2)",
+            28: "10. Ukur DC (Setelah)",
+            29: "11. Ukur phasor arus & tegangan (Setelah)"
+        }
+
+        # Fungsi pintar pembuat antarmuka Checklist
+        def buat_baris_checklist(kamus_pekerjaan):
+            for nomor, teks in kamus_pekerjaan.items():
+                st.markdown(f"**{teks}**")
+                col_cek, col_cat = st.columns([1, 2])
+                with col_cek:
+                    cl_vals[nomor] = st.radio(
+                        f"Item {nomor}", ["✓", "✗", "-"], horizontal=True, key=f"cl_{nomor}", label_visibility="collapsed"
+                    )
+                with col_cat:
+                    if cl_vals[nomor] == "✗":
+                        cat_vals[nomor] = st.text_input(f"Cat {nomor}", placeholder="⚠️ Wajib isi alasan...", key=f"cat_{nomor}")
+                    else:
+                        cat_vals[nomor] = st.text_input(f"Cat {nomor}", placeholder="Opsional...", key=f"cat_{nomor}", label_visibility="collapsed")
+                st.write("")
+
+        # Menampilkan antarmuka ke dalam masing-masing Tab
+        with tab_seb:
+            buat_baris_checklist(seb_list)
+        with tab_saat:
+            buat_baris_checklist(saat_list)
+        with tab_ses:
+            buat_baris_checklist(ses_list)
 
         # Looping untuk memunculkan Teks + Tombol + Catatan
         for i, teks in enumerate(daftar_pekerjaan):
