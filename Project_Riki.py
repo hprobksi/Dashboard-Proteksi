@@ -3,13 +3,14 @@ import io
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
+import glob
 import streamlit as st
 import pandas as pd
 from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 import tempfile
 import os
-import glob # Tambahkan 'import glob' di bagian paling atas file Anda (bersama import os, pd, dll)
+
 
 # 1. SETUP HALAMAN
 st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
