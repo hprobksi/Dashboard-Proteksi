@@ -9,6 +9,7 @@ from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 import tempfile
 import os
+import glob # Tambahkan 'import glob' di bagian paling atas file Anda (bersama import os, pd, dll)
 
 # 1. SETUP HALAMAN
 st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
@@ -92,6 +93,7 @@ if st.session_state.halaman == 'menu':
     with kolom2:
         st.button("🗺️\n\nWiring", type="primary", use_container_width=True, on_click=pindah_halaman, args=('wiring',))
         st.button("📋\n\nForm Har CL PHT", type="primary", use_container_width=True, on_click=pindah_halaman, args=('cl_pht',))
+        st.button("🗄️\n\nData Peralatan", type="primary", use_container_width=True, on_click=pindah_halaman, args=('database',))
         st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
 # ==========================================
 # HALAMAN 2: TEST PLUG
@@ -990,6 +992,92 @@ elif st.session_state.halaman == 'cl_pht':
                 )
             except Exception as e:
                 st.error(f"Error: {e}")
+
+# ==========================================
+# HALAMAN: DATABASE PERALATAN
+# ==========================================
+elif st.session_state.halaman == 'database':
+    st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
+    st.divider()
+    st.subheader("🗄️ Mesin Pencari Database Peralatan ULTG Bekasi")
+    
+    # 1. FUNGSI MEMBACA 10 FILE CSV SEKALIGUS DENGAN CEPAT
+    @st.cache_data
+    def muat_data_peralatan():
+        # Membaca semua file CSV di dalam folder data_peralatan
+        semua_file = glob.glob("data_peralatan/*.csv")
+        list_dataframe = []
+        for file in semua_file:
+            try:
+                # Membaca tiap file dan menggabungkannya
+                df = pd.read_csv(file, on_bad_lines='skip')
+                list_dataframe.append(df)
+            except Exception as e:
+                pass
+        
+        # Gabungkan semua data GI menjadi 1 tabel raksasa
+        if list_dataframe:
+            df_gabungan = pd.concat(list_dataframe, ignore_index=True)
+            # Membersihkan data yang kosong (NaN) agar tampil rapi
+            df_gabungan = df_gabungan.fillna("-")
+            return df_gabungan
+        else:
+            return pd.DataFrame() # Return kosong jika file belum diupload
+
+    # Mulai proses pemuatan data
+    with st.spinner("Memuat puluhan ribu data peralatan... ⏳"):
+        df_master = muat_data_peralatan()
+
+    if df_master.empty:
+        st.error("⚠️ Data belum tersedia. Pastikan Anda sudah membuat folder 'data_peralatan' dan meng-upload file CSV ke GitHub.")
+    else:
+        st.success(f"✅ Berhasil memuat **{len(df_master)}** unit peralatan dari seluruh GI.")
+        
+        # 2. FITUR FILTER PENCARIAN CERDAS
+        with st.expander("🔍 Filter Pencarian (Klik untuk mencari spesifik)", expanded=True):
+            col1, col2 = st.columns(2)
+            
+            # Filter berdasarkan GI / Penghantar (Kolom GI/Penghantar)
+            list_gi = ["Semua GI"] + sorted(df_master['GI/Penghantar'].unique().tolist())
+            pilih_gi = col1.selectbox("📍 Lokasi (GI / Penghantar):", list_gi)
+            
+            # Filter berdasarkan Merk (Kolom Merk)
+            list_merk = ["Semua Merk"] + sorted(df_master['Merk'].unique().tolist())
+            pilih_merk = col2.selectbox("🏷️ Merk Peralatan:", list_merk)
+            
+            col3, col4 = st.columns(2)
+            # Filter berdasarkan Kategori PST (Kolom PST)
+            list_pst = ["Semua Kategori"] + sorted(df_master['PST'].unique().tolist())
+            pilih_pst = col3.selectbox("⚙️ Kategori Fungsi (PST):", list_pst)
+            
+            # Kolom Pencarian Bebas (Type / ID / dll)
+            cari_bebas = col4.text_input("⌨️ Kata Kunci Bebas (Misal: PCS-902 / ABB):", "")
+
+        # 3. LOGIKA PENYARINGAN DATA
+        df_hasil = df_master.copy()
+        
+        if pilih_gi != "Semua GI":
+            df_hasil = df_hasil[df_hasil['GI/Penghantar'] == pilih_gi]
+        if pilih_merk != "Semua Merk":
+            df_hasil = df_hasil[df_hasil['Merk'] == pilih_merk]
+        if pilih_pst != "Semua Kategori":
+            df_hasil = df_hasil[df_hasil['PST'] == pilih_pst]
+        if cari_bebas != "":
+            # Mencari kata kunci di semua kolom text
+            df_hasil = df_hasil[
+                df_hasil.astype(str).apply(lambda x: x.str.contains(cari_bebas, case=False, na=False)).any(axis=1)
+            ]
+
+        st.divider()
+        st.markdown(f"**Menampilkan {len(df_hasil)} peralatan:**")
+        
+        # 4. MENAMPILKAN TABEL INTERAKTIF
+        # st.dataframe memungkinkan user men-scroll, men-sortir kolom, dan memperbesar layar
+        st.dataframe(
+            df_hasil[['GI/Penghantar', 'PST', 'Merk', 'Type', 'Phasa', 'Volt', 'ID']], 
+            use_container_width=True, 
+            hide_index=True
+        )
 # HALAMAN 5: SETTINGS
 # ==========================================
 elif st.session_state.halaman == 'setting':
