@@ -1001,19 +1001,28 @@ elif st.session_state.halaman == 'database':
     st.divider()
     st.subheader("🗄️ Mesin Pencari Database Peralatan ULTG Bekasi")
     
-  # 1. FUNGSI MEMBACA FILE CSV LANGSUNG
+  # 1. FUNGSI MEMBACA SEMUA FILE CSV DI HALAMAN DEPAN
     @st.cache_data
     def muat_data_peralatan():
-        try:
-            # Membaca langsung file data_perlatan.csv (sesuai typo nama file di GitHub Anda)
-            df_gabungan = pd.read_csv("data_perlatan.csv", on_bad_lines='skip')
-            
-            # Membersihkan data kosong
+        # Perhatikan tanda bintang (*). Ini artinya "baca SEMUA file csv di sini"
+        semua_file = glob.glob("*.csv") 
+        list_dataframe = []
+        for file in semua_file:
+            try:
+                # Membaca tiap file dan menggabungkannya
+                df = pd.read_csv(file, on_bad_lines='skip')
+                list_dataframe.append(df)
+            except Exception as e:
+                pass
+        
+        # Gabungkan semua data GI menjadi 1 tabel raksasa
+        if list_dataframe:
+            df_gabungan = pd.concat(list_dataframe, ignore_index=True)
+            # Membersihkan data yang kosong (NaN) agar tampil rapi
             df_gabungan = df_gabungan.fillna("-")
             return df_gabungan
-        except Exception as e:
-            # Return kosong jika file gagal dibaca
-            return pd.DataFrame() 
+        else:
+            return pd.DataFrame() # Return kosong jika file belum diupload
 
     # Mulai proses pemuatan data
     with st.spinner("Memuat puluhan ribu data peralatan... ⏳"):
