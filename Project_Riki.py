@@ -1,18 +1,19 @@
-import json
+import os
 import io
+import json
+import glob
+import tempfile
+import pandas as pd
+import streamlit as st
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
-import glob
-import streamlit as st
-import pandas as pd
 from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
-import tempfile
-import os
 
-
-# 1. SETUP HALAMAN
+# ==========================================
+# 1. SETUP HALAMAN & FUNGSI GLOBAL
+# ==========================================
 st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
 
 # ==========================================
