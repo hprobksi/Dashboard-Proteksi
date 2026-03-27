@@ -1028,18 +1028,7 @@ elif st.session_state.halaman == 'database':
     with st.spinner("Memuat puluhan ribu data peralatan... ⏳"):
         df_master = muat_data_peralatan()
         
-        # Gabungkan semua data GI menjadi 1 tabel raksasa
-        if list_dataframe:
-            df_gabungan = pd.concat(list_dataframe, ignore_index=True)
-            # Membersihkan data yang kosong (NaN) agar tampil rapi
-            df_gabungan = df_gabungan.fillna("-")
-            return df_gabungan
-        else:
-            return pd.DataFrame() # Return kosong jika file belum diupload
-
-    # Mulai proses pemuatan data
-    with st.spinner("Memuat puluhan ribu data peralatan... ⏳"):
-        df_master = muat_data_peralatan()
+        
 
     if df_master.empty:
         st.error("⚠️ Data belum tersedia. Pastikan Anda sudah membuat folder 'data_peralatan' dan meng-upload file CSV ke GitHub.")
