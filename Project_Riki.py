@@ -246,8 +246,8 @@ elif st.session_state.halaman == 'test_plug':
             "Bay IBT 1": {
                 "Relay Differential+REF Main A": {
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"},
-                                   {"PIN": "X22:2, X22:4, "FUNGSI": "CT Arus N", "AKSI": "REF HV"},
+                    "Konfigurasi": [{"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"}, 
+                                    {"PIN": "X22:2, X22:4, "FUNGSI": "CT Arus N", "AKSI": "REF HV"},
                                    {"PIN": "X22:6, X22:8, "FUNGSI": "CT Arus N", "AKSI": "REF LV"}] 
                 },
                 "Relay Differential+REF Main B": {
