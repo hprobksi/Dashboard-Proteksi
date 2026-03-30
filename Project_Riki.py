@@ -293,26 +293,26 @@ elif st.session_state.halaman == 'test_plug':
                 "Relay CCP Main B": {
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
                     "Konfigurasi": [
-                        {"PIN": "X24:22, X24:24, X24:26, X24:28", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}, 
-                        {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"}, 
-                        {"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}
+                        {"PIN": "X24:22, X24:24, X24:26, X24:28", "FUNGSI": "CT Arus IBT", "AKSI": "CCP"}, 
+                        {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus AB", "AKSI": "CCP"}, 
+                        {"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus IBT", "AKSI": "CCP"}
                     ] 
                 },
                 "Relay CBF B": {
                     "Merk": "MICOM", "Tipe": "P841", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X23:2, X23:4, X23:6, X23:8", "FUNGSI": "CT Arus B", "AKSI": "Shorting"}] 
+                    "Konfigurasi": [{"PIN": "X23:2, X23:4, X23:6, X23:8", "FUNGSI": "CT Arus B", "AKSI": "CBF B"}] 
                 },
                 "Relay CBF AB": {
                     "Merk": "MICOM", "Tipe": "P841", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X22:2, X22:4, X22:6, X22:8", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"}] 
+                    "Konfigurasi": [{"PIN": "X22:2, X22:4, X22:6, X22:8", "FUNGSI": "CT Arus AB", "AKSI": "CBF AB"}] 
                 },
                 "Relay OCR HV": {
-                    "Merk": "MICOM SCHNEIDER", "Tipe": "P7", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus HV", "AKSI": "Shorting"}] 
+                    "Merk": "SCHNEIDER", "Tipe": "P7", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus HV", "AKSI": "OCR HV"}] 
                 },
                 "Relay OCR LV": {
-                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}] 
+                    "Merk": "SCHNEIDER", "Tipe": "P5", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X26:22, X26:24, X26:26, X26:28", "FUNGSI": "CT Arus LV", "AKSI": "OCR LV"}] 
                 }
             }
         }
