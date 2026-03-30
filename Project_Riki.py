@@ -269,16 +269,16 @@ elif st.session_state.halaman == 'test_plug':
                 "Relay Differential+REF Main A": {
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
                     "Konfigurasi": [
-                        {"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"}, 
-                        {"PIN": "X22:2, X22:4", "FUNGSI": "CT Arus Fasa LV", "AKSI": "DIFF"}, 
+                        {"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF HV"}, 
+                        {"PIN": "X22:2, X22:4", "FUNGSI": "CT Arus Netral", "AKSI": "REF HV"}, 
                         {"PIN": "X22:6, X22:8", "FUNGSI": "CT Arus Netral", "AKSI": "REF LV"}
                     ] 
                 },
                 "Relay Differential+REF Main B": {
                     "Merk": "GE MULTILIN", "Tipe": "T60", "No Seri": "BLM",
                     "Konfigurasi": [
-                        {"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"}, 
-                        {"PIN": "X22:2, X22:4", "FUNGSI": "CT Arus Fasa LV", "AKSI": "DIFF"}, 
+                        {"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF HV"}, 
+                        {"PIN": "X22:2, X22:4", "FUNGSI": "CT Arus Netral", "AKSI": "REF HV"}, 
                         {"PIN": "X22:6, X22:8", "FUNGSI": "CT Arus Netral", "AKSI": "REF LV"}
                     ] 
                 },
