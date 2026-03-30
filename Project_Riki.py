@@ -261,7 +261,7 @@ elif st.session_state.halaman == 'test_plug':
                 },
                 "Relay CCP Main B": {
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
-                    "Konfigurasi": ["PIN": "X24:22, X24:24, X24:26, X24:28", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}, {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"}, {"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}] 
+                    "Konfigurasi": [{"PIN": "X24:22, X24:24, X24:26, X24:28", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}, {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"}, {"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}] 
                 },
                 "Relay CBF B": {
                     "Merk": "MICOM", "Tipe": "P841", "No Seri": "BLM",
