@@ -16,6 +16,27 @@ from docx.shared import Mm
 # ==========================================
 st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
 
+# --- FUNGSI PEMBACA DATABASE PERALATAN ---
+# Ditaruh di atas agar loadingnya sangat cepat dan tidak error
+@st.cache_data
+def muat_data_peralatan():
+    # Mencari file CSV di dalam folder data_peralatan ATAU di halaman depan
+    semua_file = glob.glob("data_peralatan/*.csv") + glob.glob("*.csv") 
+    list_dataframe = []
+    for file in semua_file:
+        try:
+            df = pd.read_csv(file, on_bad_lines='skip')
+            list_dataframe.append(df)
+        except Exception:
+            pass
+    
+    if list_dataframe:
+        df_gabungan = pd.concat(list_dataframe, ignore_index=True)
+        df_gabungan = df_gabungan.fillna("-")
+        return df_gabungan
+    else:
+        return pd.DataFrame()
+
 # ==========================================
 # SISTEM NAVIGASI
 # ==========================================
@@ -24,7 +45,8 @@ if 'halaman' not in st.session_state:
 
 def pindah_halaman(nama_halaman):
     st.session_state.halaman = nama_halaman
-    # ==========================================
+
+# ==========================================
 # FUNGSI AJAIB: UPLOAD KE GOOGLE DRIVE
 # ==========================================
 def upload_ke_gdrive(nama_file, byte_data, mime_type):
@@ -34,7 +56,7 @@ def upload_ke_gdrive(nama_file, byte_data, mime_type):
         creds = service_account.Credentials.from_service_account_info(rahasia, scopes=scopes)
         layanan = build('drive', 'v3', credentials=creds)
         
-        # 👇👇👇 MASUKKAN ID FOLDER GOOGLE DRIVE ANDA DI BAWAH INI 👇👇👇
+        # ID FOLDER GOOGLE DRIVE ANDA
         ID_FOLDER = "1gOjfORca3tVLDYJZfhAu0JiHuMKaEoAm" 
         
         metadata_file = {'name': nama_file, 'parents': [ID_FOLDER]}
@@ -74,7 +96,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# ==========================================
 # HALAMAN 1: MENU UTAMA
 # ==========================================
 if st.session_state.halaman == 'menu':
@@ -97,6 +118,7 @@ if st.session_state.halaman == 'menu':
         st.button("📋\n\nForm Har CL PHT", type="primary", use_container_width=True, on_click=pindah_halaman, args=('cl_pht',))
         st.button("🗄️\n\nData Peralatan", type="primary", use_container_width=True, on_click=pindah_halaman, args=('database',))
         st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
+
 # ==========================================
 # HALAMAN 2: TEST PLUG
 # ==========================================
@@ -105,7 +127,7 @@ elif st.session_state.halaman == 'test_plug':
     st.divider()
     st.subheader("🔌 Konfigurasi Test Block")
 
-    # 1. DATABASE (Didefinisikan di awal sebelum dipanggil dropdown)
+    # 1. DATABASE (Sudah dikoreksi tanda kutipnya!)
     database_testplug = {
         "GI Cikarang": {
             "Bay Kopel": {
@@ -246,22 +268,35 @@ elif st.session_state.halaman == 'test_plug':
             "Bay IBT 1": {
                 "Relay Differential+REF Main A": {
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"}, {"PIN": "X22:2, X22:4, "FUNGSI": "CT Arus N", "AKSI": "REF HV"}, {"PIN": "X22:6, X22:8, "FUNGSI": "CT Arus N", "AKSI": "REF LV"}] 
+                    "Konfigurasi": [
+                        {"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"}, 
+                        {"PIN": "X22:2, X22:4", "FUNGSI": "CT Arus Fasa LV", "AKSI": "DIFF"}, 
+                        {"PIN": "X22:6, X22:8", "FUNGSI": "CT Arus Netral", "AKSI": "REF LV"}
+                    ] 
                 },
                 "Relay Differential+REF Main B": {
                     "Merk": "GE MULTILIN", "Tipe": "T60", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"}, {"PIN": "X22:2, X22:4, "FUNGSI": "CT Arus N", "AKSI": "REF LV"}, {"PIN": "X22:6, X22:8, "FUNGSI": "CT Arus N", "AKSI": "REF LV"}] 
+                    "Konfigurasi": [
+                        {"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"}, 
+                        {"PIN": "X22:2, X22:4", "FUNGSI": "CT Arus Fasa LV", "AKSI": "DIFF"}, 
+                        {"PIN": "X22:6, X22:8", "FUNGSI": "CT Arus Netral", "AKSI": "REF LV"}
+                    ] 
                 },
                 "Relay CCP Main A": {
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus IBT", "AKSI": "CCP"},
-                                    {"PIN": "X25:2, X25:4, X25:6, X25:8", "FUNGSI": "CT Arus B", "AKSI": "CCP"},
-                                    {"PIN": "X26:22, X26:24, X26:26, X26:28", "FUNGSI": "CT Arus AB", "AKSI": "CCP"}
-                                   ] 
+                    "Konfigurasi": [
+                        {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus IBT", "AKSI": "CCP"},
+                        {"PIN": "X25:2, X25:4, X25:6, X25:8", "FUNGSI": "CT Arus B", "AKSI": "CCP"},
+                        {"PIN": "X26:22, X26:24, X26:26, X26:28", "FUNGSI": "CT Arus AB", "AKSI": "CCP"}
+                    ] 
                 },
                 "Relay CCP Main B": {
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
-                    "Konfigurasi": [{"PIN": "X24:22, X24:24, X24:26, X24:28", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}, {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"}, {"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}] 
+                    "Konfigurasi": [
+                        {"PIN": "X24:22, X24:24, X24:26, X24:28", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}, 
+                        {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"}, 
+                        {"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}
+                    ] 
                 },
                 "Relay CBF B": {
                     "Merk": "MICOM", "Tipe": "P841", "No Seri": "BLM",
@@ -279,12 +314,11 @@ elif st.session_state.halaman == 'test_plug':
                     "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
                     "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}] 
                 }
-                
             }
         }
     }
 
-    # 2. FILTER BERTINGKAT (Semua harus di dalam indentasi ELIF ini)
+    # 2. FILTER BERTINGKAT
     kolom_gi, kolom_bay, kolom_relay = st.columns(3)
     
     with kolom_gi:
@@ -334,7 +368,7 @@ elif st.session_state.halaman == 'test_plug':
             placeholder="Ketik catatan di sini..."
         )
         
-        # Tombol aksi (Contoh jika ingin dikembangkan nanti)
+        # Tombol aksi
         if st.button("💾 Simpan Catatan Tambahan", type="secondary"):
             if catatan_tambahan != "":
                 st.success("✅ Catatan berhasil direkam sementara di sesi ini!")
@@ -348,11 +382,9 @@ elif st.session_state.halaman == 'wiring':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
     st.subheader("🗺️ Database & Dokumentasi Wiring")
-
     st.info("Pilih lokasi untuk melihat dokumen wiring asli (40GB) atau mengupload foto revisi terbaru.")
 
     # 1. DATABASE LOKASI & LINK GDRIVE
-    # Ganti tulisan "LINK_GDRIVE_XXX" dengan link share asli dari Google Drive Anda
     lokasi_gi = {
         "GI Gandamekar": {
             "Bay Rajapaksi 1": {
@@ -360,7 +392,7 @@ elif st.session_state.halaman == 'wiring':
                 "Relay OCR": "https://drive.google.com/file/d/LINK_GDRIVE_OCR_RAJAPAKSI1/view"
             },
             "Bay Rajapaksi 2": {
-                "Relay LCD": "", # Kosongkan tanda kutip jika link belum ada
+                "Relay LCD": "", 
                 "Relay OCR": ""
             }
         },
@@ -386,7 +418,6 @@ elif st.session_state.halaman == 'wiring':
             bay_w = st.selectbox("Bay / Line", ["Pilih..."], key="w_bay")
     with k_relay:
         if bay_w != "Pilih...":
-            # Mengambil daftar relay dari dalam dictionary
             relay_w = st.selectbox("Jenis Relay", ["Pilih..."] + list(lokasi_gi[gi_w][bay_w].keys()), key="w_relay")
         else:
             relay_w = st.selectbox("Jenis Relay", ["Pilih..."], key="w_relay")
@@ -397,25 +428,19 @@ elif st.session_state.halaman == 'wiring':
     if relay_w != "Pilih...":
         st.write(f"**📍 Target Lokasi:** {gi_w} ➔ {bay_w} ➔ {relay_w}")
         
-        # Membuat 2 Tab Utama
         tab_lihat, tab_update = st.tabs(["👁️ Lihat Wiring Asli", "📸 Tambah Revisi Baru"])
         
-        # --- TAB 1: MEMBUKA FILE 40GB DARI GDRIVE ---
         with tab_lihat:
             st.write("Akses *as-built drawing* asli yang tersimpan di server Google Drive.")
             link_asli = lokasi_gi[gi_w][bay_w][relay_w]
             
             if link_asli != "":
                 st.link_button("🚀 Buka PDF Wiring di GDrive", link_asli, type="primary", use_container_width=True)
-                st.info("💡 Teknisi akan diarahkan ke aplikasi Google Drive untuk melihat dokumen tanpa menghabiskan memori HP.")
             else:
                 st.warning("⚠️ Link file wiring untuk lokasi ini belum diinput ke dalam database.")
 
-        # --- TAB 2: MENGUPLOAD REVISI KE GDRIVE ---
         with tab_update:
             st.write("Gunakan menu ini jika ada perubahan wiring/jumperan baru di lapangan.")
-            
-            # Sub-Tab untuk memisahkan Kamera dan File
             subtab1, subtab2 = st.tabs(["📸 Kamera", "📂 Upload File"])
             
             with subtab1:
@@ -434,21 +459,15 @@ elif st.session_state.halaman == 'wiring':
                         sukses = upload_ke_gdrive(file_upload.name, file_upload.getvalue(), file_upload.type)
                         if sukses:
                             st.success(f"✅ Dokumen revisi '{file_upload.name}' resmi tersimpan di database!")
-# ==========================================
+
 # ==========================================
 # HALAMAN 4: GENERATOR BERITA ACARA (BA)
 # ==========================================
 elif st.session_state.halaman == 'catatan':
-    from docxtpl import DocxTemplate, InlineImage
-    from docx.shared import Mm
-    import tempfile
-    import os
-    
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
     st.subheader("📝 Generator BA (Otomasi Cerdas)")
 
-    # --- 1. DATABASE TEMPLATE KEGIATAN ---
     db_kegiatan = {
         "Resetting AVR": "1. Melakukan pengecekan setting yang terpasang\n2. Melakukan Resetting Parameter AVR\n3. Melakukan pengecekan bersama setting pasca resetting\n4. Pengujian individu / fungsi unjuk kerja\n5. Dokumentasi",
         "Remote Riding": "1. Persiapan koneksi VPN ke gateway / server\n2. Login ke relay target via remote akses\n3. Unduh data event dan disturbance record\n4. Analisa hasil unduhan record gangguan\n5. Dokumentasi",
@@ -457,8 +476,6 @@ elif st.session_state.halaman == 'catatan':
         "Lainnya (Ketik Manual)": ""
     }
 
-    # --- 2. DATABASE FILE TANDA TANGAN ---
-    # Sesuaikan "nama_file.png" dengan nama gambar yang Anda upload ke GitHub
     db_ttd = {
         "Kosongkan (Tanda Tangan Basah)": "",
         "M Jaenal M": "ttd_jaenal.png",
@@ -477,7 +494,6 @@ elif st.session_state.halaman == 'catatan':
         "Riki H": "ttd_riki.png",
     }
 
-    # --- FORM INPUT DATA ---
     with st.expander("1. Identitas Pekerjaan", expanded=True):
         in_no_ba = st.text_input("Nomor BA", value="001 /BAPS/NWTBN/ULTG-BKSI/III/2026")
         in_judul = st.text_area("Judul Pekerjaan (Kapital)", value="RESETTING TEGANGAN REFERENSI DAN BANDWITH AVR TRAFO #1")
@@ -495,7 +511,6 @@ elif st.session_state.halaman == 'catatan':
         in_alat = st.text_input("Peralatan Terpasang", value="AVR Trafo #1 GIS 150kV New Tambun")
 
     with st.expander("3. Hasil Pekerjaan"):
-        # Fitur Otomasi Template Kegiatan
         pilih_template = st.selectbox("Pilih Template Kegiatan", list(db_kegiatan.keys()))
         in_kegiatan = st.text_area("Langkah Kegiatan", value=db_kegiatan[pilih_template], height=130)
         
@@ -522,7 +537,6 @@ elif st.session_state.halaman == 'catatan':
             in_nama_kiri = st.selectbox("Nama (Kiri)", list(db_ttd.keys()), index=1)
             
         with k2:
-            # Fitur Kolom Tengah Opsional
             pakai_tengah = st.checkbox("Aktifkan Pengesah Tengah", value=True)
             if pakai_tengah:
                 in_jab_tengah = st.text_input("Jabatan (Tengah)", value="UP2D")
@@ -539,16 +553,13 @@ elif st.session_state.halaman == 'catatan':
 
     st.divider()
 
-    # --- LOGIKA PENYUNTIKAN TEMPLATE ---
     if st.button("📄 Buat Dokumen BA", type="primary", use_container_width=True):
         with st.spinner("Merakit BA & Menempelkan Tanda Tangan... ⏳"):
             try:
                 doc = DocxTemplate("template_ba.docx")
-                
                 bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
                 tgl_format = f"{in_tgl.day} {bulan_indo[in_tgl.month - 1]} {in_tgl.year}"
                 
-                # Menyiapkan Kamus Data Teks
                 context = {
                     'no_ba': in_no_ba, 'judul_ba': in_judul, 'latar_belakang': in_latar,
                     'hari': in_hari, 'tgl': tgl_format, 'jam': in_jam.strftime('%H.%M'),
@@ -556,7 +567,6 @@ elif st.session_state.halaman == 'catatan':
                     'perbaikan': in_perbaikan, 'tertunda': in_tertunda, 'kesimpulan': in_kesimpulan,
                     'pelaksana_1': in_p1, 'pelaksana_2': in_p2, 'pelaksana_3': in_p3,
                     
-                    # Logika Jabatan & Nama (Tanda kurung dibuat otomatis jika ada isinya)
                     'jab_kiri': in_jab_kiri, 
                     'jab_tengah': in_jab_tengah, 
                     'jab_kanan': in_jab_kanan,
@@ -567,29 +577,23 @@ elif st.session_state.halaman == 'catatan':
                     'ttd_kiri': '', 'ttd_tengah': '', 'ttd_kanan': '', 'foto_lampiran': ''
                 }
                 
-               # Fungsi cerdas untuk menyisipkan TTD berdasarkan nama
                 def sisipkan_ttd(nama_pejabat):
                     if nama_pejabat in db_ttd and db_ttd[nama_pejabat] != "":
                         file_gambar = db_ttd[nama_pejabat]
                         if os.path.exists(file_gambar): 
-                            # KUNCI RAHASIANYA DI SINI: Gunakan 'height' (Tinggi), bukan 'width'
-                            # Tinggi 15 mm (1.5 cm) adalah ukuran paling ideal dan aman untuk tabel Word
                             return InlineImage(doc, file_gambar, height=Mm(15)) 
-                    return '' # Kosongkan jika tidak ketemu gambar
+                    return '' 
 
-                # Eksekusi Stempel Tanda Tangan
                 context['ttd_kiri'] = sisipkan_ttd(in_nama_kiri)
                 context['ttd_tengah'] = sisipkan_ttd(in_nama_tengah)
                 context['ttd_kanan'] = sisipkan_ttd(in_nama_kanan)
                 
-                # Eksekusi pemasangan Foto Lampiran (Lebar 13 cm)
                 if in_foto:
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_foto:
                         tmp_foto.write(in_foto.getvalue())
                         tmp_path = tmp_foto.name
                     context['foto_lampiran'] = InlineImage(doc, tmp_path, width=Mm(130))
 
-                # Render & Simpan
                 doc.render(context)
                 file_output = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
                 doc.save(file_output.name)
@@ -611,7 +615,7 @@ elif st.session_state.halaman == 'catatan':
                 )
             except Exception as e:
                 st.error(f"Error: Pastikan template_ba.docx & gambar TTD sudah di-upload ke GitHub. Detail: {e}")
-# ==========================================
+
 # ==========================================
 # HALAMAN 5: INSTRUKSI KERJA (IK)
 # ==========================================
@@ -621,8 +625,6 @@ elif st.session_state.halaman == 'ik':
     st.subheader("📖 Buku Saku Instruksi Kerja (IK)")
     st.write("Pilih alat uji atau jenis pekerjaan untuk melihat SOP dan langkah kerjanya.")
 
-   # --- DATABASE INSTRUKSI KERJA ---
-    # Anda bisa menambahkan alat uji baru di dalam kurung kurawal ini
     db_ik = {
         "Megger TORKEL 900-Series (Discharge Test)": {
             "Fungsi": "Alat ukur untuk menguji kapasitas baterai (discharge test) di gardu induk menggunakan beban arus konstan, daya konstan, atau resistansi konstan.",
@@ -659,12 +661,11 @@ elif st.session_state.halaman == 'ik':
             ],
             "Catatan Pengalaman": """
 **💡 Catatan Pengalaman Lapangan:**
-*(Silakan hapus teks ini dan ketikkan pengalaman Mas Riki di sini. Misalnya: "Perhatikan saat memasang capit buaya ke kepala baterai, pastikan tidak goyang karena arus besar bisa membuat terminal panas/meleleh", atau tips lainnya)*
+*(Silakan hapus teks ini dan ketikkan pengalaman Mas Riki di sini)*
 """
         }
     }
 
-   # --- TAMPILAN ANTARMUKA ---
     pilihan_alat = st.selectbox("Cari Peralatan Uji:", ["Pilih Alat..."] + list(db_ik.keys()))
 
     if pilihan_alat != "Pilih Alat...":
@@ -678,25 +679,19 @@ elif st.session_state.halaman == 'ik':
                 st.write(f"- {item}")
 
         st.write("#### 📋 Langkah Kerja & Panduan Visual")
-        # Looping pintar: Bisa baca format lama (teks) maupun format baru (teks+gambar)
         for i, item_langkah in enumerate(data_ik['Langkah Kerja']):
             if isinstance(item_langkah, dict):
-                # Jika pakai format baru (ada gambar)
                 st.write(f"**{i+1}.** {item_langkah['teks']}")
-                # Tampilkan gambar jika file-nya ada di GitHub
                 if item_langkah.get('gambar') and os.path.exists(item_langkah['gambar']):
                     st.image(item_langkah['gambar'], use_container_width=True)
             else:
-                # Jika pakai format lama (teks biasa)
                 st.write(f"**{i+1}.** {item_langkah}")
 
         st.write("---")
         
-        # Tampilkan Perhatian (jika ada di database lama)
         if "Perhatian" in data_ik and data_ik["Perhatian"] != "":
             st.warning(data_ik['Perhatian'])
             
-        # Tampilkan Catatan Pengalaman (jika ada di database baru)
         if "Catatan Pengalaman" in data_ik and data_ik["Catatan Pengalaman"] != "":
             st.success(data_ik['Catatan Pengalaman'])
 
@@ -709,7 +704,6 @@ elif st.session_state.halaman == 'cl_pht':
     st.subheader("📋 Generator Form Checklist Penghantar")
     st.write("Isi data di bawah ini, kosongkan (-) jika tidak ada nilai ukur.")
 
-    # --- DATABASE TANDA TANGAN ---
     db_ttd = {
         "Kosongkan (Tanda Tangan Basah)": "",
         "M Jaenal M": "ttd_jaenal.png",
@@ -727,7 +721,6 @@ elif st.session_state.halaman == 'cl_pht':
         "Riki H": "ttd_riki.png"
     }
 
-    # --- FUNGSI PINTAR UNTUK MENGHEMAT KODE UI ---
     def ui_ukur_fasa(prefix, fasa_list, ada_tegangan=True):
         data = {}
         for fasa in fasa_list:
@@ -789,15 +782,12 @@ elif st.session_state.halaman == 'cl_pht':
         with k3:
             in_nama_kanan = st.selectbox("Manager ULTG", list(db_ttd.keys()), index=2)
 
-# 2. CHECKLIST (1 - 29) TIGA TAHAPAN
+    # 2. CHECKLIST (1 - 29)
     cl_vals, cat_vals = {}, {}
     with st.expander("2. Form Checklist Pekerjaan", expanded=True):
         st.write("Pilih (✓) untuk selesai, (✗) jika ada masalah (wajib isi catatan).")
-        
-        # Membuat 3 Tab di layar aplikasi
         tab_seb, tab_saat, tab_ses = st.tabs(["🟢 SEBELUM", "🟡 SAAT", "🔴 SESUDAH"])
         
-        # --- DAFTAR PEKERJAAN SEBELUM (Item 1-8) ---
         seb_list = {
             1: "1. Pengukuran arus & tegangan (Sebelum)",
             2: "2. Cek peralatan tidak bertegangan",
@@ -809,7 +799,6 @@ elif st.session_state.halaman == 'cl_pht':
             8: "8. Dokumentasi terminal/wiring awal"
         }
         
-        # --- DAFTAR PEKERJAAN SAAT (Item 9-16) ---
         saat_list = {
             9: "1. Pastikan setting relay sesuai dokumen",
             10: "2. Ukur kontinuitas sekunder CT",
@@ -821,7 +810,6 @@ elif st.session_state.halaman == 'cl_pht':
             16: "5. Uji fungsi no trip/starting"
         }
         
-        # --- DAFTAR PEKERJAAN SESUDAH (Item 17-29) ---
         ses_list = {
             17: "1. Kembalikan wiring/terminal awal",
             18: "2. Cek kekencangan terminal wiring",
@@ -838,7 +826,6 @@ elif st.session_state.halaman == 'cl_pht':
             29: "11. Ukur phasor arus & tegangan (Setelah)"
         }
 
-        # Fungsi pintar pembuat antarmuka Checklist
         def buat_baris_checklist(kamus_pekerjaan):
             for nomor, teks in kamus_pekerjaan.items():
                 st.markdown(f"**{teks}**")
@@ -854,7 +841,6 @@ elif st.session_state.halaman == 'cl_pht':
                         cat_vals[nomor] = st.text_input(f"Cat {nomor}", placeholder="Opsional...", key=f"cat_{nomor}", label_visibility="collapsed")
                 st.write("")
 
-        # Menampilkan antarmuka ke dalam masing-masing Tab
         with tab_seb:
             buat_baris_checklist(seb_list)
         with tab_saat:
@@ -862,7 +848,6 @@ elif st.session_state.halaman == 'cl_pht':
         with tab_ses:
             buat_baris_checklist(ses_list)
 
-       
     # 3. KONTINUITAS CT
     data_kontinuitas = {}
     with st.expander("3. Nilai Kontinuitas CT", expanded=False):
@@ -872,12 +857,11 @@ elif st.session_state.halaman == 'cl_pht':
         st.write("**SESUDAH PEMELIHARAAN**")
         data_kontinuitas.update(ui_kontinuitas("set"))
 
-   # 4. FUNGSI PROTEKSI
+    # 4. FUNGSI PROTEKSI
     fungsi_vals = {}
-    with st.expander("4. Form Fungsi Proteksi (Utama, Indikasi, Cadangan)", expanded=True):
+    with st.expander("4. Form Fungsi Proteksi (Utama, Indikasi, Cadangan)", expanded=False):
         st.write("Tentukan status 20 Item Fungsi Proteksi (Pilih ENABLE/DISABLE).")
         
-        # Daftar 20 Fungsi Proteksi yang disesuaikan dengan Template Word
         daftar_fungsi = [
             "1. [UTAMA] RELAY HEALTHY / READY",
             "2. [UTAMA] LINE CURRENT DIFF",
@@ -903,14 +887,13 @@ elif st.session_state.halaman == 'cl_pht':
 
         for i, teks_fungsi in enumerate(daftar_fungsi):
             nomor = i + 1
-            # Tampilkan teks fungsi sebagai label judul radio button
             fungsi_vals[nomor] = st.radio(
                 teks_fungsi, 
                 ["ENABLE", "DISABLE", "-"], 
                 horizontal=True, 
                 key=f"fungsi_{nomor}"
             )
-            st.write("") # Sedikit jarak antar tombol
+            st.write("")
 
     # 5. PENGUKURAN
     data_ukur = {}
@@ -958,7 +941,6 @@ elif st.session_state.halaman == 'cl_pht':
                 bulan_indo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
                 tgl_format = f"{in_tgl.day} {bulan_indo[in_tgl.month - 1]} {in_tgl.year}"
                 
-                # Context Utama
                 context = {
                     'upt': in_upt, 'ultg': in_ultg, 'gi': in_gi, 'bay': in_bay, 'tgl': tgl_format,
                     'nama_pelaksana': f"( {in_nama_kiri} )" if in_nama_kiri and in_nama_kiri != "Kosongkan (Tanda Tangan Basah)" else "",
@@ -977,12 +959,10 @@ elif st.session_state.halaman == 'cl_pht':
                 context['ttd_pengawas'] = sisipkan_ttd(in_nama_tengah)
                 context['ttd_manager'] = sisipkan_ttd(in_nama_kanan)
 
-                # Looping Otomatis memasukkan 29 item Checklist & Catatan ke Context
                 for i in range(1, 30):
                     context[f'cl_{i}'] = cl_vals[i]
                     context[f'cat_{i}'] = cat_vals[i]
                 
-                # Looping Otomatis memasukkan 20 item Fungsi Enable/Disable
                 for i in range(1, 21):
                     if fungsi_vals[i] == "ENABLE":
                         context[f'en_{i}'] = '✓'
@@ -994,12 +974,10 @@ elif st.session_state.halaman == 'cl_pht':
                         context[f'en_{i}'] = ''
                         context[f'dis_{i}'] = ''
 
-                # Memasukkan semua data tabel yang di-generate otomatis
                 context.update(data_kontinuitas)
                 context.update(data_ukur)
                 context.update(data_dc)
 
-                # Lampiran Foto
                 if in_foto_cl:
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_foto:
                         tmp_foto.write(in_foto_cl.getvalue())
@@ -1028,78 +1006,57 @@ elif st.session_state.halaman == 'cl_pht':
                 st.error(f"Error: {e}")
 
 # ==========================================
-# HALAMAN: DATABASE PERALATAN
+# HALAMAN 7: DATABASE PERALATAN
 # ==========================================
 elif st.session_state.halaman == 'database':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
     st.subheader("🗄️ Mesin Pencari Database Peralatan ULTG Bekasi")
     
-  # 1. FUNGSI MEMBACA SEMUA FILE CSV DI HALAMAN DEPAN
-    @st.cache_data
-    def muat_data_peralatan():
-        # Perhatikan tanda bintang (*). Ini artinya "baca SEMUA file csv di sini"
-        semua_file = glob.glob("*.csv") 
-        list_dataframe = []
-        for file in semua_file:
-            try:
-                # Membaca tiap file dan menggabungkannya
-                df = pd.read_csv(file, on_bad_lines='skip')
-                list_dataframe.append(df)
-            except Exception as e:
-                pass
-        
-        # Gabungkan semua data GI menjadi 1 tabel raksasa
-        if list_dataframe:
-            df_gabungan = pd.concat(list_dataframe, ignore_index=True)
-            # Membersihkan data yang kosong (NaN) agar tampil rapi
-            df_gabungan = df_gabungan.fillna("-")
-            return df_gabungan
-        else:
-            return pd.DataFrame() # Return kosong jika file belum diupload
-
-    # Mulai proses pemuatan data
     with st.spinner("Memuat puluhan ribu data peralatan... ⏳"):
         df_master = muat_data_peralatan()
-        
-        
 
     if df_master.empty:
-        st.error("⚠️ Data belum tersedia. Pastikan Anda sudah membuat folder 'data_peralatan' dan meng-upload file CSV ke GitHub.")
+        st.error("⚠️ Data belum tersedia. Pastikan Anda sudah meng-upload file CSV ke GitHub.")
     else:
         st.success(f"✅ Berhasil memuat **{len(df_master)}** unit peralatan dari seluruh GI.")
         
-        # 2. FITUR FILTER PENCARIAN CERDAS
         with st.expander("🔍 Filter Pencarian (Klik untuk mencari spesifik)", expanded=True):
             col1, col2 = st.columns(2)
             
-            # Filter berdasarkan GI / Penghantar (Kolom GI/Penghantar)
-            list_gi = ["Semua GI"] + sorted(df_master['GI/Penghantar'].unique().tolist())
+            # Cek kolom GI/Penghantar
+            if 'GI/Penghantar' in df_master.columns:
+                list_gi = ["Semua GI"] + sorted(df_master['GI/Penghantar'].astype(str).unique().tolist())
+            else:
+                list_gi = ["Semua GI"]
             pilih_gi = col1.selectbox("📍 Lokasi (GI / Penghantar):", list_gi)
             
-            # Filter berdasarkan Merk (Kolom Merk)
-            list_merk = ["Semua Merk"] + sorted(df_master['Merk'].unique().tolist())
+            # Cek kolom Merk
+            if 'Merk' in df_master.columns:
+                list_merk = ["Semua Merk"] + sorted(df_master['Merk'].astype(str).unique().tolist())
+            else:
+                list_merk = ["Semua Merk"]
             pilih_merk = col2.selectbox("🏷️ Merk Peralatan:", list_merk)
             
             col3, col4 = st.columns(2)
-            # Filter berdasarkan Kategori PST (Kolom PST)
-            list_pst = ["Semua Kategori"] + sorted(df_master['PST'].unique().tolist())
+            # Cek kolom PST
+            if 'PST' in df_master.columns:
+                list_pst = ["Semua Kategori"] + sorted(df_master['PST'].astype(str).unique().tolist())
+            else:
+                list_pst = ["Semua Kategori"]
             pilih_pst = col3.selectbox("⚙️ Kategori Fungsi (PST):", list_pst)
             
-            # Kolom Pencarian Bebas (Type / ID / dll)
             cari_bebas = col4.text_input("⌨️ Kata Kunci Bebas (Misal: PCS-902 / ABB):", "")
 
-        # 3. LOGIKA PENYARINGAN DATA
         df_hasil = df_master.copy()
         
-        if pilih_gi != "Semua GI":
+        if pilih_gi != "Semua GI" and 'GI/Penghantar' in df_hasil.columns:
             df_hasil = df_hasil[df_hasil['GI/Penghantar'] == pilih_gi]
-        if pilih_merk != "Semua Merk":
+        if pilih_merk != "Semua Merk" and 'Merk' in df_hasil.columns:
             df_hasil = df_hasil[df_hasil['Merk'] == pilih_merk]
-        if pilih_pst != "Semua Kategori":
+        if pilih_pst != "Semua Kategori" and 'PST' in df_hasil.columns:
             df_hasil = df_hasil[df_hasil['PST'] == pilih_pst]
         if cari_bebas != "":
-            # Mencari kata kunci di semua kolom text
             df_hasil = df_hasil[
                 df_hasil.astype(str).apply(lambda x: x.str.contains(cari_bebas, case=False, na=False)).any(axis=1)
             ]
@@ -1107,17 +1064,18 @@ elif st.session_state.halaman == 'database':
         st.divider()
         st.markdown(f"**Menampilkan {len(df_hasil)} peralatan:**")
         
-        # 4. MENAMPILKAN TABEL INTERAKTIF
-        # st.dataframe memungkinkan user men-scroll, men-sortir kolom, dan memperbesar layar
-        st.dataframe(
-            df_hasil[['GI/Penghantar', 'PST', 'Merk', 'Type', 'Phasa', 'Volt', 'ID']], 
-            use_container_width=True, 
-            hide_index=True
-        )
-# HALAMAN 5: SETTINGS
+        kolom_tampil = [kol for kol in ['GI/Penghantar', 'PST', 'Merk', 'Type', 'Phasa', 'Volt', 'ID'] if kol in df_hasil.columns]
+        
+        if len(kolom_tampil) > 0:
+            st.dataframe(df_hasil[kolom_tampil], use_container_width=True, hide_index=True)
+        else:
+            st.dataframe(df_hasil, use_container_width=True, hide_index=True)
+
+# ==========================================
+# HALAMAN 8: SETTINGS
 # ==========================================
 elif st.session_state.halaman == 'setting':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
     st.subheader("⚙️ Settings")
-    st.write("Versi 5.0 - PDF Generator Aktif 📄")
+    st.write("Versi 5.1 - Generator & Database Super Aktif ⚡")
