@@ -242,12 +242,50 @@ elif st.session_state.halaman == 'test_plug':
                   }
             },
         },
-        "GI Tambun": {
-            "Bay Trafo 1": {
-                "Relay Differential": {
-                    "Merk": "NR", "Tipe": "PCS 978S", "No Seri": "NR-554433",
-                    "Konfigurasi": [] 
+        "GITET Muaratawar": {
+            "Bay IBT 1": {
+                "Relay Differential+REF Main A": {
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "DIFF"},
+                                   {"PIN": "X22:2, X22:4, "FUNGSI": "CT Arus N", "AKSI": "REF HV"},
+                                   {"PIN": "X22:6, X22:8, "FUNGSI": "CT Arus N", "AKSI": "REF LV"}] 
+                },
+                "Relay Differential+REF Main B": {
+                    "Merk": "GE MULTILIN", "Tipe": "T60", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X21:2, X21:4, X21:6, X21:8", "FUNGSI": "CT Arus HV", "AKSI": "Shorting"},
+                                   {"PIN": "X22:2, X22:4, "FUNGSI": "CT Arus N", "AKSI": "REF HV"},
+                                   {"PIN": "X22:6, X22:8, "FUNGSI": "CT Arus N", "AKSI": "REF LV"}] 
+                },
+                "Relay CCP Main A": {
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus IBT", "AKSI": "CCP"},
+                                    {"PIN": "X25:2, X25:4, X25:6, X25:8", "FUNGSI": "CT Arus B", "AKSI": "CCP"},
+                                    {"PIN": "X26:22, X26:24, X26:26, X26:28", "FUNGSI": "CT Arus AB", "AKSI": "CCP"}
+                                   ] 
+                },
+                "Relay CCP Main B": {
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Konfigurasi": ["PIN": "X24:22, X24:24, X24:26, X24:28", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"},
+                                   {"PIN": "X25:22, X25:24, X25:26, X25:28", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"},
+                                   {"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus IBT", "AKSI": "Shorting"}] 
+                },
+                "Relay CBF B": {
+                    "Merk": "MICOM", "Tipe": "P841", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X23:2, X23:4, X23:6, X23:8", "FUNGSI": "CT Arus B", "AKSI": "Shorting"}] 
+                },
+                "Relay CBF AB": {
+                    "Merk": "MICOM", "Tipe": "P841", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X22:2, X22:4, X22:6, X22:8", "FUNGSI": "CT Arus AB", "AKSI": "Shorting"}] 
+                },
+                "Relay OCR HV": {
+                    "Merk": "MICOM SCHNEIDER", "Tipe": "P7", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "X24:2, X24:4, X24:6, X24:8", "FUNGSI": "CT Arus HV", "AKSI": "Shorting"}] 
+                },
+                "Relay OCR LV": {
+                    "Merk": "MICOM", "Tipe": "P643", "No Seri": "BLM",
+                    "Konfigurasi": [{"PIN": "1, 3, 5, 7", "FUNGSI": "CT Arus", "AKSI": "Shorting"}] 
                 }
+                
             }
         }
     }
