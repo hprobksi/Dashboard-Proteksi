@@ -117,6 +117,7 @@ if st.session_state.halaman == 'menu':
         st.button("⚙️\n\nSettings", type="primary", use_container_width=True, on_click=pindah_halaman, args=('setting',))
 
 # ==========================================
+# ==========================================
 # HALAMAN 2: TEST PLUG
 # ==========================================
 elif st.session_state.halaman == 'test_plug':
@@ -355,9 +356,9 @@ elif st.session_state.halaman == 'test_plug':
     st.divider()
 
     # --- FITUR TAMBAH DATA GI / BAY / RELAY BARU ---
-    # Ditaruh di luar logika pilihan agar selalu bisa diakses kapanpun
     with st.expander("➕ Klik di sini untuk menambah Gardu Induk, Bay, atau Relay baru ke database"):
-        with st.form("form_tambah_data"):
+        # Kunci (key) form ini diperbarui agar menghindari duplikat
+        with st.form("form_tambah_data_baru_unik"):
             st.info("💡 Ketik nama GI yang sudah ada untuk menambahkan Bay di GI tersebut, ATAU ketik nama GI baru untuk membuat daftar baru.")
             
             kol1, kol2, kol3 = st.columns(3)
@@ -387,201 +388,127 @@ elif st.session_state.halaman == 'test_plug':
                 
             baru_catatan = st.text_area("Catatan Bawaan / SOP (Opsional)")
             
-            # --- FITUR BARU: UPLOAD FOTO ---
+            # --- UPLOAD FOTO ---
             baru_foto = st.file_uploader("📸 Upload Foto Aktual Konfigurasi (Opsional)", type=["jpg", "jpeg", "png"])
             
             tombol_simpan_baru = st.form_submit_button("💾 Simpan Data Baru ke Database", type="primary")
             
             if tombol_simpan_baru:
                 if baru_gi and baru_bay and baru_relay:
-                    # 1. Buka database saat ini
                     db_sekarang = muat_db_testplug()
                     
-                    # 2. Buat "Cabang" baru jika GI atau Bay belum pernah ada
                     if baru_gi not in db_sekarang:
                         db_sekarang[baru_gi] = {}
                     if baru_bay not in db_sekarang[baru_gi]:
                         db_sekarang[baru_gi][baru_bay] = {}
                         
-                    # 3. Buat kerangka relay baru
                     if baru_relay not in db_sekarang[baru_gi][baru_bay]:
                         db_sekarang[baru_gi][baru_bay][baru_relay] = {
-                            "Merk": baru_merk,
-                            "Tipe": baru_tipe,
-                            "No Seri": baru_seri,
-                            "Konfigurasi": [],
-                            "Catatan Bawaan": baru_catatan,
-                            "Nama Foto": "" # Disiapkan tempat untuk nama file foto
+                            "Merk": baru_merk, "Tipe": baru_tipe, "No Seri": baru_seri,
+                            "Konfigurasi": [], "Catatan Bawaan": baru_catatan, "Nama Foto": ""
                         }
                     
-                    # 4. Masukkan konfigurasi PIN jika diisi
                     if baru_pin and baru_fungsi:
                         db_sekarang[baru_gi][baru_bay][baru_relay]["Konfigurasi"].append({
-                            "PIN": baru_pin,
-                            "FUNGSI": baru_fungsi,
-                            "AKSI": baru_aksi
+                            "PIN": baru_pin, "FUNGSI": baru_fungsi, "AKSI": baru_aksi
                         })
 
-                    # 5. Eksekusi Simpan Lokal & Upload ke Google Drive
                     if baru_foto:
                         nama_file_aman = f"TESTBLOCK_{baru_gi}_{baru_bay}_{baru_relay}.jpg".replace(" ", "_")
-                        
-                        # 5a. Simpan foto ke folder lokal (WAJIB agar bisa langsung tampil)
                         with open(nama_file_aman, "wb") as f:
                             f.write(baru_foto.getbuffer())
-                            
-                        # 5b. Langsung catat nama filenya ke database (jangan nunggu GDrive)
                         db_sekarang[baru_gi][baru_bay][baru_relay]["Nama Foto"] = nama_file_aman
-                            
-                        # 5c. Upload ke GDrive sebagai Backup
                         upload_ke_gdrive(nama_file_aman, baru_foto.getvalue(), baru_foto.type)
                         
-                    # 6. Simpan permanen ke file JSON
                     simpan_db_testplug(db_sekarang)
-                    
-                    st.success(f"✅ Berhasil! {baru_relay} di {baru_gi} - {baru_bay} sudah ditambahkan ke database.")
-                    st.rerun() # Muat ulang halaman agar dropdown langsung terupdate
+                    st.success(f"✅ Berhasil! {baru_relay} di {baru_gi} - {baru_bay} ditambahkan.")
+                    st.rerun() 
                 else:
                     st.error("⚠️ Nama Gardu Induk, Bay, dan Jenis Relay tidak boleh kosong!")
 
     st.divider()
 
-    # 3. MENAMPILKAN HASIL PENCARIAN
+    # 3. MENAMPILKAN HASIL DENGAN FITUR EDIT & HAPUS
     if pilihan_relay != "Pilih Relay...":
         data = database_testplug[pilihan_gi][pilihan_bay][pilihan_relay]
-        st.success(f"Lokasi: {pilihan_gi} ➔ {pilihan_bay}")
-        st.markdown(f"#### 🏷️ {data['Merk']} {data['Tipe']}")
-        st.write(f"**No Seri:** `{data['No Seri']}`")
+        st.success(f"Lokasi: {pilihan_gi} ➔ {pilihan_bay} ➔ {pilihan_relay}")
         
-        # --- FITUR TAMPIL FOTO (BARU) ---
-        if "Nama Foto" in data and data["Nama Foto"] != "":
-            # Cek apakah file fotonya ada di komputer/server lokal
-            if os.path.exists(data["Nama Foto"]):
-                st.image(data["Nama Foto"], caption=f"Foto Konfigurasi {pilihan_relay}", use_container_width=True)
-            else:
-                st.info(f"📸 **Foto Referensi Tersedia di GDrive:** `{data['Nama Foto']}`")
+        # --- MEMBUAT 3 TAB ---
+        tab_detail, tab_edit, tab_hapus = st.tabs(["👁️ Detail & Catatan", "✏️ Edit Alat", "🗑️ Hapus Data"])
         
-        # --- MENAMPILKAN CATATAN BAWAAN ---
-        if "Catatan Bawaan" in data and data["Catatan Bawaan"] != "":
-            st.warning(f"📌 **Catatan SOP:** {data['Catatan Bawaan']}")
-        
-        # --- MENAMPILKAN TABEL KONFIGURASI (HANYA JIKA ADA ISINYA) ---
-        if "Konfigurasi" in data and len(data["Konfigurasi"]) > 0:
-            st.write("**Panduan Test Block:**")
-            st.table(pd.DataFrame(data["Konfigurasi"]))
-        # (Kode 'else' untuk pesan biru sudah dihapus di sini agar bersih)
+        # TAB 1: TAMPILAN DETAIL
+        with tab_detail:
+            st.markdown(f"#### 🏷️ {data.get('Merk', '-')} {data.get('Tipe', '-')}")
+            st.write(f"**No Seri:** `{data.get('No Seri', '-')}`")
             
-        st.divider()
-        
-        # --- FITUR CATATAN TAMBAHAN (INPUT TEKNISI) ---
-        st.write("### 📝 Catatan Aktual Lapangan")
-        catatan_tambahan = st.text_area(
-            "Tambahkan temuan atau anomali saat pengujian (Opsional):", 
-            placeholder="Ketik catatan di sini..."
-        )
-        
-        # Tombol aksi
-        if st.button("💾 Simpan Catatan Tambahan", type="secondary"):
-            if catatan_tambahan != "":
-                st.success("✅ Catatan berhasil direkam sementara di sesi ini!")
-            else:
-                st.error("⚠️ Catatan masih kosong.")
-
-        # --- EDIT KETERANGAN DATABASE ---
-        st.write("---")
-        st.write("### ✏️ Edit Keterangan Database")
-
-        with st.expander("Klik di sini untuk mengedit Catatan SOP/Bawaan relay ini secara permanen"):
-            with st.form("form_edit_catatan"):
-                catatan_baru = st.text_area(
-                    "Ubah Catatan:", 
-                    value=data.get("Catatan Bawaan", "")
-                )
+            if "Nama Foto" in data and data["Nama Foto"] != "":
+                if os.path.exists(data["Nama Foto"]):
+                    st.image(data["Nama Foto"], caption=f"Foto Konfigurasi {pilihan_relay}", use_container_width=True)
+                else:
+                    st.info(f"📸 **Foto Referensi Tersedia di GDrive:** `{data['Nama Foto']}`")
+            
+            if "Catatan Bawaan" in data and data["Catatan Bawaan"] != "":
+                st.warning(f"📌 **Catatan SOP:** {data['Catatan Bawaan']}")
+            
+            if "Konfigurasi" in data and len(data["Konfigurasi"]) > 0:
+                st.write("**Panduan Test Block:**")
+                st.table(pd.DataFrame(data["Konfigurasi"]))
                 
-                tombol_update = st.form_submit_button("🔄 Update Keterangan Permanen")
+            st.divider()
+            st.write("### 📝 Catatan Aktual Lapangan")
+            catatan_tambahan = st.text_area("Tambahkan temuan sementara di sesi ini:", placeholder="Ketik catatan di sini...")
+            if st.button("💾 Simpan Catatan Tambahan", type="secondary"):
+                if catatan_tambahan != "": st.success("✅ Catatan direkam sementara!")
+                else: st.error("⚠️ Catatan masih kosong.")
+
+            st.write("---")
+            with st.expander("✏️ Edit Keterangan Database Permanen"):
+                with st.form("form_edit_catatan_unik"):
+                    catatan_baru = st.text_area("Ubah Catatan Bawaan/SOP:", value=data.get("Catatan Bawaan", ""))
+                    if st.form_submit_button("🔄 Update Keterangan Permanen"):
+                        db_sekarang = muat_db_testplug()
+                        db_sekarang[pilihan_gi][pilihan_bay][pilihan_relay]["Catatan Bawaan"] = catatan_baru
+                        simpan_db_testplug(db_sekarang)
+                        st.success("✅ Keterangan berhasil di-update!")
+                        st.rerun() 
+
+        # TAB 2: EDIT SPESIFIKASI ALAT
+        with tab_edit:
+            st.write("Ubah spesifikasi alat jika ada kesalahan input.")
+            with st.form("form_edit_spesifikasi"):
+                edit_merk = st.text_input("Merk", value=data.get("Merk", ""))
+                edit_tipe = st.text_input("Tipe", value=data.get("Tipe", ""))
+                edit_seri = st.text_input("No Seri", value=data.get("No Seri", ""))
                 
-                if tombol_update:
+                if st.form_submit_button("💾 Simpan Perubahan Alat"):
                     db_sekarang = muat_db_testplug()
-                    db_sekarang[pilihan_gi][pilihan_bay][pilihan_relay]["Catatan Bawaan"] = catatan_baru
+                    db_sekarang[pilihan_gi][pilihan_bay][pilihan_relay]["Merk"] = edit_merk
+                    db_sekarang[pilihan_gi][pilihan_bay][pilihan_relay]["Tipe"] = edit_tipe
+                    db_sekarang[pilihan_gi][pilihan_bay][pilihan_relay]["No Seri"] = edit_seri
                     simpan_db_testplug(db_sekarang)
-                    
-                    st.success("✅ Keterangan berhasil di-update ke dalam database!")
+                    st.success("✅ Spesifikasi berhasil diubah!")
                     st.rerun()
 
-    
-# --- FITUR TAMBAH DATA GI / BAY / RELAY BARU ---
-        st.write("---")
-        st.write("### ➕ Tambah Data Peralatan Baru")
-        
-        with st.expander("Klik di sini untuk menambah Gardu Induk, Bay, atau Relay baru ke sistem"):
-            with st.form("form_tambah_data"):
-                st.info("💡 Ketik nama GI yang sudah ada untuk menambahkan Bay di GI tersebut, ATAU ketik nama GI baru untuk membuat daftar baru.")
+        # TAB 3: HAPUS DATA PERMANEN
+        with tab_hapus:
+            st.error(f"⚠️ Peringatan! Menghapus **{pilihan_relay}** akan menghilangkan datanya secara permanen dari {pilihan_gi} - {pilihan_bay}.")
+            if st.button("🚨 Ya, Hapus Relay Ini", type="primary"):
+                db_sekarang = muat_db_testplug()
                 
-                kol1, kol2, kol3 = st.columns(3)
-                with kol1:
-                    baru_gi = st.text_input("📍 Nama Gardu Induk (Wajib)", placeholder="Contoh: GI Bekasi")
-                with kol2:
-                    baru_bay = st.text_input("🏢 Nama Bay / Line (Wajib)", placeholder="Contoh: Bay Trafo 1")
-                with kol3:
-                    baru_relay = st.text_input("🔌 Jenis Relay (Wajib)", placeholder="Contoh: Relay OCR")
+                # Hapus relay
+                del db_sekarang[pilihan_gi][pilihan_bay][pilihan_relay]
                 
-                kol4, kol5, kol6 = st.columns(3)
-                with kol4:
-                    baru_merk = st.text_input("🏷️ Merk", placeholder="Contoh: GE Multilin")
-                with kol5:
-                    baru_tipe = st.text_input("⚙️ Tipe", placeholder="Contoh: P14D")
-                with kol6:
-                    baru_seri = st.text_input("🔢 No Seri")
+                # Bersihkan Bay jika sudah kosong (tidak ada relay lain)
+                if len(db_sekarang[pilihan_gi][pilihan_bay]) == 0:
+                    del db_sekarang[pilihan_gi][pilihan_bay]
                     
-                st.write("**Konfigurasi PIN (Opsional, bisa ditambah nanti)**")
-                kol7, kol8, kol9 = st.columns(3)
-                with kol7:
-                    baru_pin = st.text_input("PIN Test Block", placeholder="Contoh: 1, 3, 5, 7")
-                with kol8:
-                    baru_fungsi = st.text_input("Fungsi PIN", placeholder="Contoh: CT Arus")
-                with kol9:
-                    baru_aksi = st.selectbox("Aksi Pengamanan", ["Shorting", "Isolasi", "Normal"])
+                # Bersihkan GI jika sudah kosong (tidak ada bay lain)
+                if len(db_sekarang[pilihan_gi]) == 0:
+                    del db_sekarang[pilihan_gi]
                     
-                baru_catatan = st.text_area("Catatan Bawaan / SOP (Opsional)")
-                
-                tombol_simpan_baru = st.form_submit_button("💾 Simpan Data Baru ke Database", type="primary")
-                
-                if tombol_simpan_baru:
-                    if baru_gi and baru_bay and baru_relay:
-                        # 1. Buka database saat ini
-                        db_sekarang = muat_db_testplug()
-                        
-                        # 2. Buat "Cabang" baru jika GI atau Bay belum pernah ada
-                        if baru_gi not in db_sekarang:
-                            db_sekarang[baru_gi] = {}
-                        if baru_bay not in db_sekarang[baru_gi]:
-                            db_sekarang[baru_gi][baru_bay] = {}
-                            
-                        # 3. Buat kerangka relay baru
-                        if baru_relay not in db_sekarang[baru_gi][baru_bay]:
-                            db_sekarang[baru_gi][baru_bay][baru_relay] = {
-                                "Merk": baru_merk,
-                                "Tipe": baru_tipe,
-                                "No Seri": baru_seri,
-                                "Konfigurasi": [],
-                                "Catatan Bawaan": baru_catatan
-                            }
-                        
-                        # 4. Masukkan konfigurasi PIN jika diisi
-                        if baru_pin and baru_fungsi:
-                            db_sekarang[baru_gi][baru_bay][baru_relay]["Konfigurasi"].append({
-                                "PIN": baru_pin,
-                                "FUNGSI": baru_fungsi,
-                                "AKSI": baru_aksi
-                            })
-                            
-                        # 5. Simpan permanen ke file JSON
-                        simpan_db_testplug(db_sekarang)
-                        
-                        st.success(f"✅ Berhasil! {baru_relay} di {baru_gi} - {baru_bay} sudah ditambahkan.")
-                        st.rerun() # Muat ulang halaman agar dropdown langsung terupdate
-                    else:
-                        st.error("⚠️ Nama Gardu Induk, Bay, dan Jenis Relay tidak boleh kosong!")
+                simpan_db_testplug(db_sekarang)
+                st.success("✅ Data berhasil dihapus permanen!")
+                st.rerun()
                         
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
