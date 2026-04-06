@@ -19,11 +19,13 @@ st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡"
 # --- FUNGSI PEMBACA DATABASE PERALATAN ---
 @st.cache_data
 def muat_data_peralatan():
+    # Mencari file CSV di dalam folder data_peralatan ATAU di halaman depan
     semua_file = glob.glob("data_peralatan/*.csv") + glob.glob("*.csv") 
     list_dataframe = []
     for file in semua_file:
         try:
-            df = pd.read_csv(file, on_bad_lines='skip')
+            # FIX: Tambahkan sep=';' karena CSV dari sistem biasanya pakai titik koma
+            df = pd.read_csv(file, sep=';', on_bad_lines='skip', dtype=str)
             list_dataframe.append(df)
         except Exception:
             pass
@@ -1199,10 +1201,48 @@ elif st.session_state.halaman == 'database':
         st.divider()
         st.markdown(f"**Menampilkan {len(df_hasil)} peralatan:**")
         
-        kolom_tampil = [kol for kol in ['GI/Penghantar', 'PST', 'Merk', 'Type', 'Phasa', 'Volt', 'ID'] if kol in df_hasil.columns]
-        
-        if len(kolom_tampil) > 0:
-            st.dataframe(df_hasil[kolom_tampil], use_container_width=True, hide_index=True)
+        # --- MENGATUR KOLOM YANG TAMPIL & MENGGANTI NAMA KOLOM BIAR RAPI ---
+        # Kita ambil nama kolom dari CSV yang cocok dengan kebutuhanmu
+        kolom_tersedia = df_hasil.columns.tolist()
+        kolom_target = []
+        rename_dict = {}
+
+        # 1. Nama GI
+        if 'GI/Penghantar' in kolom_tersedia:
+            kolom_target.append('GI/Penghantar')
+            rename_dict['GI/Penghantar'] = 'Gardu Induk'
+            
+        # 2. Nama Bay (Biasanya di CSV SAP namanya Functloc atau Penempatan)
+        if 'Functloc' in kolom_tersedia:
+            kolom_target.append('Functloc')
+            rename_dict['Functloc'] = 'Bay / Lokasi'
+            
+        # 3. Jenis Peralatan (PST)
+        if 'PST' in kolom_tersedia:
+            kolom_target.append('PST')
+            rename_dict['PST'] = 'Jenis Peralatan'
+            
+        # 4. Merk
+        if 'Merk' in kolom_tersedia:
+            kolom_target.append('Merk')
+            
+        # 5. Type
+        if 'Type' in kolom_tersedia:
+            kolom_target.append('Type')
+            rename_dict['Type'] = 'Tipe'
+            
+        # 6. No Seri (Bisa ID atau SID)
+        if 'ID' in kolom_tersedia:
+            kolom_target.append('ID')
+            rename_dict['ID'] = 'No Seri'
+        elif 'SID' in kolom_tersedia:
+            kolom_target.append('SID')
+            rename_dict['SID'] = 'No Seri'
+
+        # Eksekusi pemotongan kolom dan tampilkan
+        if len(kolom_target) > 0:
+            df_tampil = df_hasil[kolom_target].rename(columns=rename_dict)
+            st.dataframe(df_tampil, use_container_width=True, hide_index=True)
         else:
             st.dataframe(df_hasil, use_container_width=True, hide_index=True)
 
