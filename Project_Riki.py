@@ -387,6 +387,9 @@ elif st.session_state.halaman == 'test_plug':
                 
             baru_catatan = st.text_area("Catatan Bawaan / SOP (Opsional)")
             
+            # --- FITUR BARU: UPLOAD FOTO ---
+            baru_foto = st.file_uploader("📸 Upload Foto Aktual Konfigurasi (Opsional)", type=["jpg", "jpeg", "png"])
+            
             tombol_simpan_baru = st.form_submit_button("💾 Simpan Data Baru ke Database", type="primary")
             
             if tombol_simpan_baru:
@@ -407,7 +410,8 @@ elif st.session_state.halaman == 'test_plug':
                             "Tipe": baru_tipe,
                             "No Seri": baru_seri,
                             "Konfigurasi": [],
-                            "Catatan Bawaan": baru_catatan
+                            "Catatan Bawaan": baru_catatan,
+                            "Nama Foto": "" # Disiapkan tempat untuk nama file foto
                         }
                     
                     # 4. Masukkan konfigurasi PIN jika diisi
@@ -417,11 +421,20 @@ elif st.session_state.halaman == 'test_plug':
                             "FUNGSI": baru_fungsi,
                             "AKSI": baru_aksi
                         })
+
+                    # 5. Eksekusi Upload ke Google Drive (Jika foto diisi)
+                    if baru_foto:
+                        nama_file_aman = f"TESTBLOCK_{baru_gi}_{baru_bay}_{baru_relay}.jpg".replace(" ", "_")
+                        sukses_upload = upload_ke_gdrive(nama_file_aman, baru_foto.getvalue(), baru_foto.type)
                         
-                    # 5. Simpan permanen ke file JSON
+                        if sukses_upload:
+                            # Jika sukses, catat nama filenya di JSON
+                            db_sekarang[baru_gi][baru_bay][baru_relay]["Nama Foto"] = nama_file_aman
+                        
+                    # 6. Simpan permanen ke file JSON
                     simpan_db_testplug(db_sekarang)
                     
-                    st.success(f"✅ Berhasil! {baru_relay} di {baru_gi} - {baru_bay} sudah ditambahkan.")
+                    st.success(f"✅ Berhasil! {baru_relay} di {baru_gi} - {baru_bay} sudah ditambahkan ke database.")
                     st.rerun() # Muat ulang halaman agar dropdown langsung terupdate
                 else:
                     st.error("⚠️ Nama Gardu Induk, Bay, dan Jenis Relay tidak boleh kosong!")
