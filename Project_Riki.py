@@ -317,6 +317,26 @@ elif st.session_state.halaman == 'test_plug':
             }
         }
     }
+    FILE_DB_TESTPLUG = 'db_testplug.json'
+
+def simpan_db_testplug(data):
+    # Fungsi untuk menyimpan data ke file JSON
+    with open(FILE_DB_TESTPLUG, 'w') as file:
+        json.dump(data, file, indent=4)
+
+def muat_db_testplug():
+    # Cek apakah file json sudah ada
+    if os.path.exists(FILE_DB_TESTPLUG):
+        # Kalau SUDAH ADA, baca dari JSON (berarti sudah ada update dari dashboard)
+        with open(FILE_DB_TESTPLUG, 'r') as file:
+            return json.load(file)
+    else:
+        # Kalau BELUM ADA, pakai data bawaan kamu, lalu langsung bikin file JSON-nya!
+        simpan_db_testplug(DATA_BAWAAN_TESTPLUG)
+        return DATA_BAWAAN_TESTPLUG
+
+# Nantinya, variabel yang dipakai di halaman Test Plug adalah ini:
+database_testplug = muat_db_testplug()
 
     # 2. FILTER BERTINGKAT
     kolom_gi, kolom_bay, kolom_relay = st.columns(3)
@@ -374,6 +394,35 @@ elif st.session_state.halaman == 'test_plug':
                 st.success("✅ Catatan berhasil direkam sementara di sesi ini!")
             else:
                 st.error("⚠️ Catatan masih kosong.")
+        # (Taruh ini di Halaman 2: TEST PLUG, tepat di bawah bagian yang menampilkan Hasil/Catatan)
+
+st.write("---")
+st.write("### ✏️ Edit Keterangan Database")
+
+# Pakai expander agar tidak menuhi layar
+with st.expander("Klik di sini untuk mengedit Catatan SOP/Bawaan relay ini secara permanen"):
+    # Form untuk mengedit catatan yang sudah ada
+    with st.form("form_edit_catatan"):
+        # Tampilkan catatan yang lama sebagai nilai awal (value) di text area
+        catatan_baru = st.text_area(
+            "Ubah Catatan:", 
+            value=data.get("Catatan Bawaan", "")
+        )
+        
+        tombol_update = st.form_submit_button("🔄 Update Keterangan Permanen")
+        
+        if tombol_update:
+            # 1. Panggil database terbaru
+            db_sekarang = muat_db_testplug()
+            
+            # 2. Ubah data catatan di lokasi yang sesuai (GI -> Bay -> Relay)
+            db_sekarang[pilihan_gi][pilihan_bay][pilihan_relay]["Catatan Bawaan"] = catatan_baru
+            
+            # 3. Simpan ulang ke JSON
+            simpan_db_testplug(db_sekarang)
+            
+            st.success("✅ Keterangan berhasil di-update ke dalam database!")
+            st.rerun() # Refresh halaman agar data baru langsung tampil
 
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
