@@ -422,14 +422,16 @@ elif st.session_state.halaman == 'test_plug':
                             "AKSI": baru_aksi
                         })
 
-                    # 5. Eksekusi Upload ke Google Drive (Jika foto diisi)
+                    # 5. Eksekusi Upload ke Google Drive & Simpan Lokal (Jika foto diisi)
                     if baru_foto:
                         nama_file_aman = f"TESTBLOCK_{baru_gi}_{baru_bay}_{baru_relay}.jpg".replace(" ", "_")
-                        sukses_upload = upload_ke_gdrive(nama_file_aman, baru_foto.getvalue(), baru_foto.type)
                         
-                        if sukses_upload:
-                            # Jika sukses, catat nama filenya di JSON
-                            db_sekarang[baru_gi][baru_bay][baru_relay]["Nama Foto"] = nama_file_aman
+                        # Simpan foto ke folder lokal agar bisa langsung tampil di layar
+                        with open(nama_file_aman, "wb") as f:
+                            f.write(baru_foto.getbuffer())
+                            
+                        # Upload ke GDrive sebagai Backup
+                        sukses_upload = upload_ke_gdrive(nama_file_aman, baru_foto.getvalue(), baru_foto.type)
                         
                     # 6. Simpan permanen ke file JSON
                     simpan_db_testplug(db_sekarang)
@@ -448,16 +450,23 @@ elif st.session_state.halaman == 'test_plug':
         st.markdown(f"#### 🏷️ {data['Merk']} {data['Tipe']}")
         st.write(f"**No Seri:** `{data['No Seri']}`")
         
+        # --- FITUR TAMPIL FOTO (BARU) ---
+        if "Nama Foto" in data and data["Nama Foto"] != "":
+            # Cek apakah file fotonya ada di komputer/server lokal
+            if os.path.exists(data["Nama Foto"]):
+                st.image(data["Nama Foto"], caption=f"Foto Konfigurasi {pilihan_relay}", use_container_width=True)
+            else:
+                st.info(f"📸 **Foto Referensi Tersedia di GDrive:** `{data['Nama Foto']}`")
+        
         # --- MENAMPILKAN CATATAN BAWAAN ---
         if "Catatan Bawaan" in data and data["Catatan Bawaan"] != "":
             st.warning(f"📌 **Catatan SOP:** {data['Catatan Bawaan']}")
         
-        # --- MENAMPILKAN TABEL KONFIGURASI ---
-        if len(data["Konfigurasi"]) > 0:
+        # --- MENAMPILKAN TABEL KONFIGURASI (HANYA JIKA ADA ISINYA) ---
+        if "Konfigurasi" in data and len(data["Konfigurasi"]) > 0:
             st.write("**Panduan Test Block:**")
             st.table(pd.DataFrame(data["Konfigurasi"]))
-        else:
-            st.info("⚠️ Tabel belum diinput.")
+        # (Kode 'else' untuk pesan biru sudah dihapus di sini agar bersih)
             
         st.divider()
         
