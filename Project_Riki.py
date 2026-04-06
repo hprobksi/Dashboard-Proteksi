@@ -422,16 +422,19 @@ elif st.session_state.halaman == 'test_plug':
                             "AKSI": baru_aksi
                         })
 
-                    # 5. Eksekusi Upload ke Google Drive & Simpan Lokal (Jika foto diisi)
+                    # 5. Eksekusi Simpan Lokal & Upload ke Google Drive
                     if baru_foto:
                         nama_file_aman = f"TESTBLOCK_{baru_gi}_{baru_bay}_{baru_relay}.jpg".replace(" ", "_")
                         
-                        # Simpan foto ke folder lokal agar bisa langsung tampil di layar
+                        # 5a. Simpan foto ke folder lokal (WAJIB agar bisa langsung tampil)
                         with open(nama_file_aman, "wb") as f:
                             f.write(baru_foto.getbuffer())
                             
-                        # Upload ke GDrive sebagai Backup
-                        sukses_upload = upload_ke_gdrive(nama_file_aman, baru_foto.getvalue(), baru_foto.type)
+                        # 5b. Langsung catat nama filenya ke database (jangan nunggu GDrive)
+                        db_sekarang[baru_gi][baru_bay][baru_relay]["Nama Foto"] = nama_file_aman
+                            
+                        # 5c. Upload ke GDrive sebagai Backup
+                        upload_ke_gdrive(nama_file_aman, baru_foto.getvalue(), baru_foto.type)
                         
                     # 6. Simpan permanen ke file JSON
                     simpan_db_testplug(db_sekarang)
