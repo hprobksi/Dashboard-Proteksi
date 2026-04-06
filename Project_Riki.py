@@ -408,7 +408,80 @@ elif st.session_state.halaman == 'test_plug':
                     
                     st.success("✅ Keterangan berhasil di-update ke dalam database!")
                     st.rerun() 
-
+# --- FITUR TAMBAH DATA GI / BAY / RELAY BARU ---
+        st.write("---")
+        st.write("### ➕ Tambah Data Peralatan Baru")
+        
+        with st.expander("Klik di sini untuk menambah Gardu Induk, Bay, atau Relay baru ke sistem"):
+            with st.form("form_tambah_data"):
+                st.info("💡 Ketik nama GI yang sudah ada untuk menambahkan Bay di GI tersebut, ATAU ketik nama GI baru untuk membuat daftar baru.")
+                
+                kol1, kol2, kol3 = st.columns(3)
+                with kol1:
+                    baru_gi = st.text_input("📍 Nama Gardu Induk (Wajib)", placeholder="Contoh: GI Bekasi")
+                with kol2:
+                    baru_bay = st.text_input("🏢 Nama Bay / Line (Wajib)", placeholder="Contoh: Bay Trafo 1")
+                with kol3:
+                    baru_relay = st.text_input("🔌 Jenis Relay (Wajib)", placeholder="Contoh: Relay OCR")
+                
+                kol4, kol5, kol6 = st.columns(3)
+                with kol4:
+                    baru_merk = st.text_input("🏷️ Merk", placeholder="Contoh: GE Multilin")
+                with kol5:
+                    baru_tipe = st.text_input("⚙️ Tipe", placeholder="Contoh: P14D")
+                with kol6:
+                    baru_seri = st.text_input("🔢 No Seri")
+                    
+                st.write("**Konfigurasi PIN (Opsional, bisa ditambah nanti)**")
+                kol7, kol8, kol9 = st.columns(3)
+                with kol7:
+                    baru_pin = st.text_input("PIN Test Block", placeholder="Contoh: 1, 3, 5, 7")
+                with kol8:
+                    baru_fungsi = st.text_input("Fungsi PIN", placeholder="Contoh: CT Arus")
+                with kol9:
+                    baru_aksi = st.selectbox("Aksi Pengamanan", ["Shorting", "Isolasi", "Normal"])
+                    
+                baru_catatan = st.text_area("Catatan Bawaan / SOP (Opsional)")
+                
+                tombol_simpan_baru = st.form_submit_button("💾 Simpan Data Baru ke Database", type="primary")
+                
+                if tombol_simpan_baru:
+                    if baru_gi and baru_bay and baru_relay:
+                        # 1. Buka database saat ini
+                        db_sekarang = muat_db_testplug()
+                        
+                        # 2. Buat "Cabang" baru jika GI atau Bay belum pernah ada
+                        if baru_gi not in db_sekarang:
+                            db_sekarang[baru_gi] = {}
+                        if baru_bay not in db_sekarang[baru_gi]:
+                            db_sekarang[baru_gi][baru_bay] = {}
+                            
+                        # 3. Buat kerangka relay baru
+                        if baru_relay not in db_sekarang[baru_gi][baru_bay]:
+                            db_sekarang[baru_gi][baru_bay][baru_relay] = {
+                                "Merk": baru_merk,
+                                "Tipe": baru_tipe,
+                                "No Seri": baru_seri,
+                                "Konfigurasi": [],
+                                "Catatan Bawaan": baru_catatan
+                            }
+                        
+                        # 4. Masukkan konfigurasi PIN jika diisi
+                        if baru_pin and baru_fungsi:
+                            db_sekarang[baru_gi][baru_bay][baru_relay]["Konfigurasi"].append({
+                                "PIN": baru_pin,
+                                "FUNGSI": baru_fungsi,
+                                "AKSI": baru_aksi
+                            })
+                            
+                        # 5. Simpan permanen ke file JSON
+                        simpan_db_testplug(db_sekarang)
+                        
+                        st.success(f"✅ Berhasil! {baru_relay} di {baru_gi} - {baru_bay} sudah ditambahkan.")
+                        st.rerun() # Muat ulang halaman agar dropdown langsung terupdate
+                    else:
+                        st.error("⚠️ Nama Gardu Induk, Bay, dan Jenis Relay tidak boleh kosong!")
+                        
 # ==========================================
 # HALAMAN 3: WIRING DIAGRAM & DOKUMENTASI
 # ==========================================
