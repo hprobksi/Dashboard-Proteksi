@@ -16,26 +16,35 @@ from docx.shared import Mm
 # ==========================================
 st.set_page_config(page_title="App Proteksi", layout="centered", page_icon="⚡")
 
-# --- FUNGSI PEMBACA DATABASE PERALATAN ---
-@st.cache_data
+# --- FUNGSI PEMBACA & PENYIMPAN DATABASE PERALATAN ---
+FILE_DB_PERALATAN = "db_peralatan_aktif.csv"
+
 def muat_data_peralatan():
-    # Mencari file CSV di dalam folder data_peralatan ATAU di halaman depan
-    semua_file = glob.glob("data_peralatan/*.csv") + glob.glob("*.csv") 
+    # Jika file database aktif sudah ada, langsung baca
+    if os.path.exists(FILE_DB_PERALATAN):
+        return pd.read_csv(FILE_DB_PERALATAN, sep=';', dtype=str).fillna("-")
+    
+    # Jika belum ada, baca CSV lama dan jadikan database aktif
+    semua_file = glob.glob("data_peralatan/*.csv") + [f for f in glob.glob("*.csv") if f not in [FILE_DB_PERALATAN]] 
     list_dataframe = []
     for file in semua_file:
         try:
-            # FIX: Tambahkan sep=';' karena CSV dari sistem biasanya pakai titik koma
             df = pd.read_csv(file, sep=';', on_bad_lines='skip', dtype=str)
             list_dataframe.append(df)
         except Exception:
             pass
     
     if list_dataframe:
-        df_gabungan = pd.concat(list_dataframe, ignore_index=True)
-        df_gabungan = df_gabungan.fillna("-")
+        df_gabungan = pd.concat(list_dataframe, ignore_index=True).fillna("-")
+        # Simpan sebagai file master baru
+        df_gabungan.to_csv(FILE_DB_PERALATAN, sep=';', index=False)
         return df_gabungan
     else:
         return pd.DataFrame()
+
+def simpan_data_peralatan(df):
+    # Fungsi untuk menyimpan perubahan ke CSV master
+    df.to_csv(FILE_DB_PERALATAN, sep=';', index=False)
 
 # ==========================================
 # SISTEM NAVIGASI
