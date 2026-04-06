@@ -1157,40 +1157,54 @@ elif st.session_state.halaman == 'cl_pht':
 elif st.session_state.halaman == 'database':
     st.button("⬅️ Kembali ke Menu", type="secondary", on_click=pindah_halaman, args=('menu',))
     st.divider()
-    st.subheader("🗄️ Mesin Pencari Database Peralatan ULTG Bekasi")
+    st.subheader("🗄️ Mesin Pencari & Database Peralatan")
     
-    with st.spinner("Memuat puluhan ribu data peralatan... ⏳"):
-        df_master = muat_data_peralatan()
+    df_master = muat_data_peralatan()
+
+    # --- FITUR TAMBAH DATA BARU ---
+    with st.expander("➕ Tambah Data Peralatan Baru"):
+        with st.form("form_tambah_peralatan"):
+            st.write("Masukkan data spesifikasi alat baru:")
+            c1, c2, c3 = st.columns(3)
+            t_gi = c1.text_input("Gardu Induk", placeholder="Contoh: GI Cikarang")
+            t_bay = c2.text_input("Bay / Lokasi", placeholder="Contoh: Bay Trafo 1")
+            t_pst = c3.text_input("Jenis Peralatan", placeholder="Contoh: Relay Jarak")
+            
+            c4, c5, c6 = st.columns(3)
+            t_merk = c4.text_input("Merk", placeholder="Contoh: MICOM")
+            t_tipe = c5.text_input("Tipe", placeholder="Contoh: P546")
+            t_seri = c6.text_input("No Seri", placeholder="Contoh: 12345678")
+            
+            if st.form_submit_button("💾 Simpan Peralatan Baru", type="primary"):
+                if t_gi and t_bay:
+                    baris_baru = pd.DataFrame([{
+                        'GI/Penghantar': t_gi, 'Functloc': t_bay, 'PST': t_pst,
+                        'Merk': t_merk, 'Type': t_tipe, 'ID': t_seri
+                    }])
+                    df_master = pd.concat([df_master, baris_baru], ignore_index=True).fillna("-")
+                    simpan_data_peralatan(df_master)
+                    st.success("✅ Data berhasil ditambahkan ke database!")
+                    st.rerun()
+                else:
+                    st.error("⚠️ Gardu Induk dan Bay wajib diisi!")
+                    
+    st.write("---")
 
     if df_master.empty:
-        st.error("⚠️ Data belum tersedia. Pastikan Anda sudah meng-upload file CSV ke GitHub.")
+        st.error("⚠️ Data belum tersedia. Pastikan file CSV ada.")
     else:
-        st.success(f"✅ Berhasil memuat **{len(df_master)}** unit peralatan dari seluruh GI.")
-        
         with st.expander("🔍 Filter Pencarian (Klik untuk mencari spesifik)", expanded=True):
             col1, col2 = st.columns(2)
             
-            # Cek kolom GI/Penghantar
-            if 'GI/Penghantar' in df_master.columns:
-                list_gi = ["Semua GI"] + sorted(df_master['GI/Penghantar'].astype(str).unique().tolist())
-            else:
-                list_gi = ["Semua GI"]
+            list_gi = ["Semua GI"] + sorted(df_master['GI/Penghantar'].astype(str).unique().tolist()) if 'GI/Penghantar' in df_master.columns else ["Semua GI"]
             pilih_gi = col1.selectbox("📍 Lokasi (GI / Penghantar):", list_gi)
             
-            # Cek kolom Merk
-            if 'Merk' in df_master.columns:
-                list_merk = ["Semua Merk"] + sorted(df_master['Merk'].astype(str).unique().tolist())
-            else:
-                list_merk = ["Semua Merk"]
+            list_merk = ["Semua Merk"] + sorted(df_master['Merk'].astype(str).unique().tolist()) if 'Merk' in df_master.columns else ["Semua Merk"]
             pilih_merk = col2.selectbox("🏷️ Merk Peralatan:", list_merk)
             
             col3, col4 = st.columns(2)
-            # Cek kolom PST
-            if 'PST' in df_master.columns:
-                list_pst = ["Semua Kategori"] + sorted(df_master['PST'].astype(str).unique().tolist())
-            else:
-                list_pst = ["Semua Kategori"]
-            pilih_pst = col3.selectbox("⚙️ Kategori Fungsi (PST):", list_pst)
+            list_pst = ["Semua Kategori"] + sorted(df_master['PST'].astype(str).unique().tolist()) if 'PST' in df_master.columns else ["Semua Kategori"]
+            pilih_pst = col3.selectbox("⚙️ Jenis Peralatan (PST):", list_pst)
             
             cari_bebas = col4.text_input("⌨️ Kata Kunci Bebas (Misal: PCS-902 / ABB):", "")
 
@@ -1203,44 +1217,29 @@ elif st.session_state.halaman == 'database':
         if pilih_pst != "Semua Kategori" and 'PST' in df_hasil.columns:
             df_hasil = df_hasil[df_hasil['PST'] == pilih_pst]
         if cari_bebas != "":
-            df_hasil = df_hasil[
-                df_hasil.astype(str).apply(lambda x: x.str.contains(cari_bebas, case=False, na=False)).any(axis=1)
-            ]
+            df_hasil = df_hasil[df_hasil.astype(str).apply(lambda x: x.str.contains(cari_bebas, case=False, na=False)).any(axis=1)]
 
         st.divider()
         st.markdown(f"**Menampilkan {len(df_hasil)} peralatan:**")
         
-        # --- MENGATUR KOLOM YANG TAMPIL & MENGGANTI NAMA KOLOM BIAR RAPI ---
-        # Kita ambil nama kolom dari CSV yang cocok dengan kebutuhanmu
+        # --- RAPIKAN NAMA KOLOM UNTUK DITAMPILKAN ---
         kolom_tersedia = df_hasil.columns.tolist()
         kolom_target = []
         rename_dict = {}
 
-        # 1. Nama GI
         if 'GI/Penghantar' in kolom_tersedia:
             kolom_target.append('GI/Penghantar')
             rename_dict['GI/Penghantar'] = 'Gardu Induk'
-            
-        # 2. Nama Bay (Biasanya di CSV SAP namanya Functloc atau Penempatan)
         if 'Functloc' in kolom_tersedia:
             kolom_target.append('Functloc')
             rename_dict['Functloc'] = 'Bay / Lokasi'
-            
-        # 3. Jenis Peralatan (PST)
         if 'PST' in kolom_tersedia:
             kolom_target.append('PST')
             rename_dict['PST'] = 'Jenis Peralatan'
-            
-        # 4. Merk
-        if 'Merk' in kolom_tersedia:
-            kolom_target.append('Merk')
-            
-        # 5. Type
+        if 'Merk' in kolom_tersedia: kolom_target.append('Merk')
         if 'Type' in kolom_tersedia:
             kolom_target.append('Type')
             rename_dict['Type'] = 'Tipe'
-            
-        # 6. No Seri (Bisa ID atau SID)
         if 'ID' in kolom_tersedia:
             kolom_target.append('ID')
             rename_dict['ID'] = 'No Seri'
@@ -1248,12 +1247,61 @@ elif st.session_state.halaman == 'database':
             kolom_target.append('SID')
             rename_dict['SID'] = 'No Seri'
 
-        # Eksekusi pemotongan kolom dan tampilkan
+        # Tampilkan tabel yang sudah rapi
         if len(kolom_target) > 0:
-            df_tampil = df_hasil[kolom_target].rename(columns=rename_dict)
-            st.dataframe(df_tampil, use_container_width=True, hide_index=True)
+            st.dataframe(df_hasil[kolom_target].rename(columns=rename_dict), use_container_width=True, hide_index=True)
         else:
             st.dataframe(df_hasil, use_container_width=True, hide_index=True)
+
+        # --- FITUR EDIT & HAPUS BERDASARKAN HASIL PENCARIAN ---
+        if not df_hasil.empty:
+            st.write("---")
+            st.write("### ✏️ Edit atau 🗑️ Hapus Data")
+            with st.expander("Pilih peralatan dari tabel di atas yang ingin di-Edit atau di-Hapus"):
+                
+                # Bikin dropdown agar user bisa milih data mana yang mau diedit
+                def format_opsi(idx):
+                    baris = df_hasil.loc[idx]
+                    return f"{baris.get('GI/Penghantar','-')} | {baris.get('Functloc','-')} | {baris.get('Merk','-')} {baris.get('Type','-')}"
+                
+                pilihan_idx = st.selectbox("Pilih Peralatan:", df_hasil.index, format_func=format_opsi)
+                
+                if pilihan_idx is not None:
+                    baris_pilih = df_master.loc[pilihan_idx]
+                    
+                    tab_edit, tab_hapus = st.tabs(["✏️ Edit Data Ini", "🗑️ Hapus Data Ini"])
+                    
+                    with tab_edit:
+                        with st.form("form_edit_peralatan"):
+                            st.write("Ubah detail spesifikasi:")
+                            e1, e2, e3 = st.columns(3)
+                            e_gi = e1.text_input("Gardu Induk", value=baris_pilih.get('GI/Penghantar', '-'))
+                            e_bay = e2.text_input("Bay / Lokasi", value=baris_pilih.get('Functloc', '-'))
+                            e_pst = e3.text_input("Jenis", value=baris_pilih.get('PST', '-'))
+                            
+                            e4, e5, e6 = st.columns(3)
+                            e_merk = e4.text_input("Merk", value=baris_pilih.get('Merk', '-'))
+                            e_tipe = e5.text_input("Tipe", value=baris_pilih.get('Type', '-'))
+                            e_seri = e6.text_input("No Seri", value=baris_pilih.get('ID', '-'))
+                            
+                            if st.form_submit_button("💾 Simpan Perubahan"):
+                                df_master.loc[pilihan_idx, 'GI/Penghantar'] = e_gi
+                                df_master.loc[pilihan_idx, 'Functloc'] = e_bay
+                                df_master.loc[pilihan_idx, 'PST'] = e_pst
+                                df_master.loc[pilihan_idx, 'Merk'] = e_merk
+                                df_master.loc[pilihan_idx, 'Type'] = e_tipe
+                                df_master.loc[pilihan_idx, 'ID'] = e_seri
+                                simpan_data_peralatan(df_master)
+                                st.success("✅ Data berhasil di-update!")
+                                st.rerun()
+                                
+                    with tab_hapus:
+                        st.warning("⚠️ Perhatian: Data peralatan yang dihapus tidak dapat dikembalikan.")
+                        if st.button("🚨 Ya, Hapus Peralatan Ini", type="primary"):
+                            df_master = df_master.drop(pilihan_idx)
+                            simpan_data_peralatan(df_master)
+                            st.success("✅ Data berhasil dihapus secara permanen!")
+                            st.rerun()
 
 # ==========================================
 # HALAMAN 8: SETTINGS
